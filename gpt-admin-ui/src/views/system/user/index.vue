@@ -142,8 +142,13 @@
           <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
           <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns[4].visible" width="120" />
-          <el-table-column label="状态" align="center" key="status" v-if="columns[5].visible">
+          <el-table-column label="用户余额" align="center" key="balance" prop="balance" v-if="columns[4].visible" width="100" />
+          <el-table-column label="余额过期时间" align="center" key="expiredTime" prop="expiredTime" v-if="columns[5].visible" width="100" />
+          <el-table-column label="总的充值金额" align="center" key="totalRecharge" prop="totalRecharge" v-if="columns[6].visible" width="100" />
+          <el-table-column label="总的消费金额" align="center" key="totalConsume" prop="totalConsume" v-if="columns[7].visible" width="100" />
+          <el-table-column label="消费次数" align="center" key="consumptionTimes" prop="consumptionTimes" v-if="columns[8].visible" width="100" />
+          <el-table-column label="最后消费时间" align="center" key="lastConsumptionTime" prop="lastConsumptionTime" v-if="columns[9].visible" width="100" />
+          <el-table-column label="状态" align="center" key="status" v-if="columns[10].visible">
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -153,7 +158,7 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[6].visible" width="160">
+          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[11].visible" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
@@ -186,6 +191,8 @@
                     v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
                   <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
                     v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
+                  <el-dropdown-item command="handleRecharge" icon="el-icon-circle-check"
+                                    v-hasPermi="['system:user:recharge']">余额编辑</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
@@ -328,15 +335,16 @@
 </template>
 
 <script>
-import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect } from "@/api/system/user";
+import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUserStatus, deptTreeSelect,getUserReCharge } from "@/api/system/user";
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import Balance from '@/views/system/balance/index.vue';
 
 export default {
   name: "User",
   dicts: ['sys_normal_disable', 'sys_user_sex'],
-  components: { Treeselect },
+  components: { Treeselect,Balance },
   data() {
     return {
       // 遮罩层
@@ -403,9 +411,14 @@ export default {
         { key: 1, label: `用户名称`, visible: true },
         { key: 2, label: `用户昵称`, visible: true },
         { key: 3, label: `部门`, visible: true },
-        { key: 4, label: `手机号码`, visible: true },
-        { key: 5, label: `状态`, visible: true },
-        { key: 6, label: `创建时间`, visible: true }
+        { key: 4, label: `用户余额`, visible: true },
+        { key: 5, label: `余额过期时间`, visible: true },
+        { key: 6, label: `总的充值金额`, visible: true },
+        { key: 7, label: `总的消费金额`, visible: true },
+        { key: 8, label: `消费次数`, visible: true },
+        { key: 9, label: `最后消费时间`, visible: true },
+        { key: 10, label: `状态`, visible: true },
+        { key: 11, label: `创建时间`, visible: true }
       ],
       // 表单校验
       rules: {
@@ -539,6 +552,9 @@ export default {
         case "handleAuthRole":
           this.handleAuthRole(row);
           break;
+        case "handleRecharge":
+          this.handleRecharge(row);
+          break;
         default:
           break;
       }
@@ -552,6 +568,15 @@ export default {
         this.open = true;
         this.title = "添加用户";
         this.form.password = this.initPassword;
+      });
+    },
+
+
+    handleRecharge(row) {
+      this.reset();
+      getUserReCharge(row.userId).then(response => {
+        this.open = true;
+        this.title = "余额编辑";
       });
     },
     /** 修改按钮操作 */

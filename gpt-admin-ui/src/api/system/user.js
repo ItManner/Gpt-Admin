@@ -18,6 +18,14 @@ export function getUser(userId) {
   })
 }
 
+// 查询用户余额详情
+export function getUserReCharge(userId) {
+  return request({
+    url: '/system/balance/' + parseStrEmpty(userId),
+    method: 'get'
+  })
+}
+
 // 新增用户
 export function addUser(data) {
   return request({

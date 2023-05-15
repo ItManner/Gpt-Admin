@@ -404,7 +404,9 @@ public class SysUserServiceImpl implements ISysUserService
     {
         for (Long userId : userIds)
         {
-            checkUserAllowed(new SysUser(userId));
+            SysUser sysUser = new SysUser();
+            sysUser.setUserId(userId);
+            checkUserAllowed(sysUser);
             checkUserDataScope(userId);
         }
         // 删除用户与角色关联
