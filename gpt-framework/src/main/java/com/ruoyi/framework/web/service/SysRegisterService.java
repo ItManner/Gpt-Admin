@@ -1,5 +1,9 @@
 package com.ruoyi.framework.web.service;
 
+import com.ruoyi.system.mapper.SysUserBalanceMapper;
+import com.ruoyi.system.service.ISysDeptService;
+import com.ruoyi.system.service.ISysUserBalanceService;
+import com.ruoyi.system.service.impl.SysUserBalanceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
@@ -20,7 +24,7 @@ import com.ruoyi.system.service.ISysUserService;
 
 /**
  * 注册校验方法
- * 
+ *
  * @author ruoyi
  */
 @Component
@@ -35,6 +39,9 @@ public class SysRegisterService
     @Autowired
     private RedisCache redisCache;
 
+    @Autowired
+    private ISysUserBalanceService userBalanceService;
+
     /**
      * 注册
      */
@@ -43,7 +50,6 @@ public class SysRegisterService
         String msg = "", username = registerBody.getUsername(), password = registerBody.getPassword();
         SysUser sysUser = new SysUser();
         sysUser.setUserName(username);
-
         // 验证码开关
         boolean captchaEnabled = configService.selectCaptchaEnabled();
         if (captchaEnabled)
@@ -77,6 +83,8 @@ public class SysRegisterService
         {
             sysUser.setNickName(username);
             sysUser.setPassword(SecurityUtils.encryptPassword(password));
+            sysUser.setDept(registerBody.getDept());
+            sysUser.setDeptId(registerBody.getDept().getDeptId());
             boolean regFlag = userService.registerUser(sysUser);
             if (!regFlag)
             {
@@ -84,6 +92,8 @@ public class SysRegisterService
             }
             else
             {
+                //初始化用户余额信息
+                userBalanceService.initUserBalance(sysUser);
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER, MessageUtils.message("user.register.success")));
             }
         }
@@ -92,7 +102,7 @@ public class SysRegisterService
 
     /**
      * 校验验证码
-     * 
+     *
      * @param username 用户名
      * @param code 验证码
      * @param uuid 唯一标识

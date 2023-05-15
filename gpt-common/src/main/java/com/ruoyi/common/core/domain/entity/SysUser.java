@@ -14,7 +14,7 @@ import com.ruoyi.common.xss.Xss;
 
 /**
  * 用户对象 sys_user
- * 
+ *
  * @author ruoyi
  */
 public class SysUser extends BaseEntity
@@ -83,11 +83,24 @@ public class SysUser extends BaseEntity
     /** 角色组 */
     private Long[] roleIds;
 
-    /** 岗位组 */
-    private Long[] postIds;
 
     /** 角色ID */
     private Long roleId;
+
+    /** 用户余额信息 */
+    private SysUserBalance balance;
+
+
+    public SysUserBalance getBalance()
+    {
+        return balance;
+    }
+
+    public void setBalance(SysUserBalance balance)
+    {
+        this.balance = balance;
+    }
+
 
     public SysUser()
     {
@@ -275,16 +288,6 @@ public class SysUser extends BaseEntity
     public void setRoleIds(Long[] roleIds)
     {
         this.roleIds = roleIds;
-    }
-
-    public Long[] getPostIds()
-    {
-        return postIds;
-    }
-
-    public void setPostIds(Long[] postIds)
-    {
-        this.postIds = postIds;
     }
 
     public Long getRoleId()

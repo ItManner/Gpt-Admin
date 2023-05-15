@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.SysUserBalanceMapper">
+    
+    <resultMap type="SysUserBalance" id="SysUserBalanceResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="balance"    column="balance"    />
+        <result property="expiredTime"    column="expired_time"    />
+        <result property="totalRecharge"    column="total_recharge"    />
+        <result property="totalConsume"    column="total_consume"    />
+        <result property="consumptionTimes"    column="consumption_times"    />
+        <result property="lastConsumptionTime"    column="last_consumption_time"    />
+    </resultMap>
+
+    <sql id="selectSysUserBalanceVo">
+        select id, user_id, balance, expired_time, total_recharge, total_consume, consumption_times, last_consumption_time from sys_user_balance
+    </sql>
+
+    <select id="selectSysUserBalanceList" parameterType="SysUserBalance" resultMap="SysUserBalanceResult">
+        <include refid="selectSysUserBalanceVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="balance != null "> and balance = #{balance}</if>
+            <if test="expiredTime != null "> and expired_time = #{expiredTime}</if>
+            <if test="totalRecharge != null "> and total_recharge = #{totalRecharge}</if>
+            <if test="totalConsume != null "> and total_consume = #{totalConsume}</if>
+            <if test="consumptionTimes != null "> and consumption_times = #{consumptionTimes}</if>
+            <if test="lastConsumptionTime != null "> and last_consumption_time = #{lastConsumptionTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysUserBalanceById" parameterType="Long" resultMap="SysUserBalanceResult">
+        <include refid="selectSysUserBalanceVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysUserBalance" parameterType="SysUserBalance" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_user_balance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="balance != null">balance,</if>
+            <if test="expiredTime != null">expired_time,</if>
+            <if test="totalRecharge != null">total_recharge,</if>
+            <if test="totalConsume != null">total_consume,</if>
+            <if test="consumptionTimes != null">consumption_times,</if>
+            <if test="lastConsumptionTime != null">last_consumption_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="balance != null">#{balance},</if>
+            <if test="expiredTime != null">#{expiredTime},</if>
+            <if test="totalRecharge != null">#{totalRecharge},</if>
+            <if test="totalConsume != null">#{totalConsume},</if>
+            <if test="consumptionTimes != null">#{consumptionTimes},</if>
+            <if test="lastConsumptionTime != null">#{lastConsumptionTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysUserBalance" parameterType="SysUserBalance">
+        update sys_user_balance
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="balance != null">balance = #{balance},</if>
+            <if test="expiredTime != null">expired_time = #{expiredTime},</if>
+            <if test="totalRecharge != null">total_recharge = #{totalRecharge},</if>
+            <if test="totalConsume != null">total_consume = #{totalConsume},</if>
+            <if test="consumptionTimes != null">consumption_times = #{consumptionTimes},</if>
+            <if test="lastConsumptionTime != null">last_consumption_time = #{lastConsumptionTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysUserBalanceById" parameterType="Long">
+        delete from sys_user_balance where id = #{id}
+    </delete>
+
+    <delete id="deleteSysUserBalanceByIds" parameterType="String">
+        delete from sys_user_balance where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

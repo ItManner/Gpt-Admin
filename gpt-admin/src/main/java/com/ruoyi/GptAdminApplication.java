@@ -6,16 +6,16 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
 /**
  * 启动程序
- * 
+ *
  * @author ruoyi
  */
 @SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
-public class RuoYiApplication
+public class GptAdminApplication
 {
     public static void main(String[] args)
     {
         // System.setProperty("spring.devtools.restart.enabled", "false");
-        SpringApplication.run(RuoYiApplication.class, args);
+        SpringApplication.run(GptAdminApplication.class, args);
         System.out.println("(♥◠‿◠)ﾉﾞ  GptAdmin启动成功   ლ(´ڡ`ლ)ﾞ");
     }
 }

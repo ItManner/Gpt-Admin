@@ -1,8 +1,10 @@
 package com.ruoyi.common.core.domain.model;
 
+import com.ruoyi.common.core.domain.entity.SysDept;
+
 /**
  * 用户登录对象
- * 
+ *
  * @author ruoyi
  */
 public class LoginBody
@@ -26,6 +28,22 @@ public class LoginBody
      * 唯一标识
      */
     private String uuid;
+
+
+    /**
+     * 设置部门  后台好统计和区分 方便其他功能拓展
+     */
+    private SysDept dept;
+
+    public SysDept getDept()
+    {
+        return dept;
+    }
+
+    public void setDept(SysDept dept)
+    {
+        this.dept = dept;
+    }
 
     public String getUsername()
     {
