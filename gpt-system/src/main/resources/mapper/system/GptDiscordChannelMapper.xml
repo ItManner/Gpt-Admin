@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.GptDiscordChannelMapper">
+    
+    <resultMap type="GptDiscordChannel" id="GptDiscordChannelResult">
+        <result property="id"    column="id"    />
+        <result property="discordServerId"    column="discord_server_id"    />
+        <result property="discordChannelId"    column="discord_channel_id"    />
+        <result property="discordToken"    column="discord_token"    />
+        <result property="createdTime"    column="created_time"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <sql id="selectGptDiscordChannelVo">
+        select id, discord_server_id, discord_channel_id, discord_token, created_time, del_flag from gpt_discord_channel
+    </sql>
+
+    <select id="selectGptDiscordChannelList" parameterType="GptDiscordChannel" resultMap="GptDiscordChannelResult">
+        <include refid="selectGptDiscordChannelVo"/>
+        <where>  
+            <if test="discordServerId != null  and discordServerId != ''"> and discord_server_id = #{discordServerId}</if>
+            <if test="discordChannelId != null  and discordChannelId != ''"> and discord_channel_id = #{discordChannelId}</if>
+            <if test="discordToken != null  and discordToken != ''"> and discord_token = #{discordToken}</if>
+            <if test="createdTime != null "> and created_time = #{createdTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectGptDiscordChannelById" parameterType="Long" resultMap="GptDiscordChannelResult">
+        <include refid="selectGptDiscordChannelVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertGptDiscordChannel" parameterType="GptDiscordChannel" useGeneratedKeys="true" keyProperty="id">
+        insert into gpt_discord_channel
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="discordServerId != null and discordServerId != ''">discord_server_id,</if>
+            <if test="discordChannelId != null and discordChannelId != ''">discord_channel_id,</if>
+            <if test="discordToken != null and discordToken != ''">discord_token,</if>
+            <if test="createdTime != null">created_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="discordServerId != null and discordServerId != ''">#{discordServerId},</if>
+            <if test="discordChannelId != null and discordChannelId != ''">#{discordChannelId},</if>
+            <if test="discordToken != null and discordToken != ''">#{discordToken},</if>
+            <if test="createdTime != null">#{createdTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGptDiscordChannel" parameterType="GptDiscordChannel">
+        update gpt_discord_channel
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="discordServerId != null and discordServerId != ''">discord_server_id = #{discordServerId},</if>
+            <if test="discordChannelId != null and discordChannelId != ''">discord_channel_id = #{discordChannelId},</if>
+            <if test="discordToken != null and discordToken != ''">discord_token = #{discordToken},</if>
+            <if test="createdTime != null">created_time = #{createdTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGptDiscordChannelById" parameterType="Long">
+        delete from gpt_discord_channel where id = #{id}
+    </delete>
+
+    <delete id="deleteGptDiscordChannelByIds" parameterType="String">
+        delete from gpt_discord_channel where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.GptBalanceOrderMapper">
+    
+    <resultMap type="GptBalanceOrder" id="GptBalanceOrderResult">
+        <result property="orderId"    column="order_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="rechargeAmount"    column="recharge_amount"    />
+        <result property="rechargeTime"    column="recharge_time"    />
+        <result property="rechargeStatus"    column="recharge_status"    />
+    </resultMap>
+
+    <sql id="selectGptBalanceOrderVo">
+        select order_id, user_id, recharge_amount, recharge_time, recharge_status from gpt_balance_order
+    </sql>
+
+    <select id="selectGptBalanceOrderList" parameterType="GptBalanceOrder" resultMap="GptBalanceOrderResult">
+        <include refid="selectGptBalanceOrderVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="rechargeAmount != null "> and recharge_amount = #{rechargeAmount}</if>
+            <if test="rechargeTime != null "> and recharge_time = #{rechargeTime}</if>
+            <if test="rechargeStatus != null "> and recharge_status = #{rechargeStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectGptBalanceOrderByOrderId" parameterType="Long" resultMap="GptBalanceOrderResult">
+        <include refid="selectGptBalanceOrderVo"/>
+        where order_id = #{orderId}
+    </select>
+        
+    <insert id="insertGptBalanceOrder" parameterType="GptBalanceOrder" useGeneratedKeys="true" keyProperty="orderId">
+        insert into gpt_balance_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="rechargeAmount != null">recharge_amount,</if>
+            <if test="rechargeTime != null">recharge_time,</if>
+            <if test="rechargeStatus != null">recharge_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="rechargeAmount != null">#{rechargeAmount},</if>
+            <if test="rechargeTime != null">#{rechargeTime},</if>
+            <if test="rechargeStatus != null">#{rechargeStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGptBalanceOrder" parameterType="GptBalanceOrder">
+        update gpt_balance_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="rechargeAmount != null">recharge_amount = #{rechargeAmount},</if>
+            <if test="rechargeTime != null">recharge_time = #{rechargeTime},</if>
+            <if test="rechargeStatus != null">recharge_status = #{rechargeStatus},</if>
+        </trim>
+        where order_id = #{orderId}
+    </update>
+
+    <delete id="deleteGptBalanceOrderByOrderId" parameterType="Long">
+        delete from gpt_balance_order where order_id = #{orderId}
+    </delete>
+
+    <delete id="deleteGptBalanceOrderByOrderIds" parameterType="String">
+        delete from gpt_balance_order where order_id in 
+        <foreach item="orderId" collection="array" open="(" separator="," close=")">
+            #{orderId}
+        </foreach>
+    </delete>
+</mapper>
