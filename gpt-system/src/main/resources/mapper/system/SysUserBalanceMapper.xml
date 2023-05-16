@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.SysUserBalanceMapper">
-    
+
     <resultMap type="SysUserBalance" id="SysUserBalanceResult">
         <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
@@ -21,7 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectSysUserBalanceList" parameterType="SysUserBalance" resultMap="SysUserBalanceResult">
         <include refid="selectSysUserBalanceVo"/>
-        <where>  
+        <where>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="balance != null "> and balance = #{balance}</if>
             <if test="expiredTime != null "> and expired_time = #{expiredTime}</if>
@@ -31,12 +31,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="lastConsumptionTime != null "> and last_consumption_time = #{lastConsumptionTime}</if>
         </where>
     </select>
-    
+
     <select id="selectSysUserBalanceById" parameterType="Long" resultMap="SysUserBalanceResult">
         <include refid="selectSysUserBalanceVo"/>
-        where id = #{id}
+        where user_id = #{id}
     </select>
-        
+
     <insert id="insertSysUserBalance" parameterType="SysUserBalance" useGeneratedKeys="true" keyProperty="id">
         insert into sys_user_balance
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -78,7 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteSysUserBalanceByIds" parameterType="String">
-        delete from sys_user_balance where id in 
+        delete from sys_user_balance where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

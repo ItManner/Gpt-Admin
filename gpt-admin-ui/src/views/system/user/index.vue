@@ -302,6 +302,30 @@
       </div>
     </el-dialog>
 
+    <!-- 添加或修改用户余额对话框 -->
+    <el-dialog :title="title" :visible.sync="balanceOpen" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
+        <el-form-item label="用户余额" prop="balance">
+          <el-input v-model="form.balance" placeholder="请输入用户余额" />
+        </el-form-item>
+        <el-form-item label="余额过期时间" prop="expiredTime">
+          <el-date-picker clearable
+                          v-model="form.expiredTime"
+                          type="date"
+                          value-format="yyyy-MM-dd"
+                          placeholder="请选择余额过期时间">
+          </el-date-picker>
+        </el-form-item>
+        <el-form-item label="总的充值金额" prop="totalRecharge">
+          <el-input v-model="form.totalRecharge" placeholder="请输入总的充值金额" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="balanceSubmitForm">确 定</el-button>
+        <el-button @click="balanceCancel">取 消</el-button>
+      </div>
+    </el-dialog>
+
     <!-- 用户导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
       <el-upload
@@ -339,6 +363,7 @@ import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUs
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
+import {addBalance, getBalance, updateBalance} from "@/api/system/balance";
 
 export default {
   name: "User",
@@ -346,6 +371,8 @@ export default {
   components: { Treeselect },
   data() {
     return {
+      //余额弹出层
+      balanceOpen: false,
       // 遮罩层
       loading: true,
       // 选中数组
@@ -505,6 +532,11 @@ export default {
       this.open = false;
       this.reset();
     },
+    // 余额取消按钮
+    balanceCancel() {
+      this.balanceOpen = false;
+      this.reset();
+    },
     // 表单重置
     reset() {
       this.form = {
@@ -574,8 +606,10 @@ export default {
     handleRecharge(row) {
       this.reset();
       getUserReCharge(row.userId).then(response => {
-        this.open = true;
-        this.title = "余额编辑";
+        this.form = response.data;
+        console.log(this.form);
+        this.balanceOpen = true;
+        this.title = "修改用户余额";
       });
     },
     /** 修改按钮操作 */
@@ -612,6 +646,23 @@ export default {
       const userId = row.userId;
       this.$router.push("/system/user-auth/role/" + userId);
     },
+    /** 提交余额修改按钮 */
+    balanceSubmitForm() {
+      this.$refs["form"].validate(valid => {
+        if (valid) {
+            updateBalance(this.form).then(response => {
+              if (response.code == 200){
+                this.$modal.msgSuccess("修改成功");
+                this.balanceOpen = false;
+                this.getList();
+                return;
+              }
+              this.$modal.msgError("修改失败");
+            });
+        }
+      });
+    },
+
     /** 提交按钮 */
     submitForm: function() {
       this.$refs["form"].validate(valid => {

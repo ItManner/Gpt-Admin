@@ -88,6 +88,7 @@ public class SysUserBalanceController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody SysUserBalance sysUserBalance)
     {
+        sysUserBalance.setTotalRecharge(sysUserBalance.getTotalRecharge().add(sysUserBalance.getBalance()));
         return toAjax(sysUserBalanceService.updateSysUserBalance(sysUserBalance));
     }
 

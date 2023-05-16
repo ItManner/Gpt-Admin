@@ -261,6 +261,12 @@ export default {
     this.getList();
   },
   methods: {
+    open() {
+      this.open = true
+    },
+    close() {
+      this.open = false
+    },
     /** 查询用户余额列表 */
     getList() {
       this.loading = true;
