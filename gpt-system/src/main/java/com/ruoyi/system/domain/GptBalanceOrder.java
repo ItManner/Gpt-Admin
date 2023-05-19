@@ -3,6 +3,7 @@ package com.ruoyi.system.domain;
 import java.math.BigDecimal;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.annotation.Excel;
@@ -10,10 +11,11 @@ import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 余额充值订单对象 gpt_balance_order
- * 
+ *
  * @author GptAdmin
  * @date 2023-05-16
  */
+@Data
 public class GptBalanceOrder extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -38,48 +40,57 @@ public class GptBalanceOrder extends BaseEntity
     @Excel(name = "充值状态", readConverterExp = "0=：待处理，1：已处理")
     private Integer rechargeStatus;
 
-    public void setOrderId(Long orderId) 
+
+    /** 商户订单号 */
+    @Excel(name = "商户订单号")
+    private String orderCode;
+
+    /** 商品订单标题 */
+    @Excel(name = "商品订单标题")
+    private String goodsTitle;
+
+    public void setOrderId(Long orderId)
     {
         this.orderId = orderId;
     }
 
-    public Long getOrderId() 
+    public Long getOrderId()
     {
         return orderId;
     }
-    public void setUserId(Long userId) 
+    public void setUserId(Long userId)
     {
         this.userId = userId;
     }
 
-    public Long getUserId() 
+    public Long getUserId()
     {
         return userId;
     }
-    public void setRechargeAmount(BigDecimal rechargeAmount) 
+    public void setRechargeAmount(BigDecimal rechargeAmount)
     {
         this.rechargeAmount = rechargeAmount;
     }
 
-    public BigDecimal getRechargeAmount() 
+    public BigDecimal getRechargeAmount()
     {
         return rechargeAmount;
     }
-    public void setRechargeTime(Date rechargeTime) 
+    public void setRechargeTime(Date rechargeTime)
     {
         this.rechargeTime = rechargeTime;
     }
 
-    public Date getRechargeTime() 
+    public Date getRechargeTime()
     {
         return rechargeTime;
     }
-    public void setRechargeStatus(Integer rechargeStatus) 
+    public void setRechargeStatus(Integer rechargeStatus)
     {
         this.rechargeStatus = rechargeStatus;
     }
 
-    public Integer getRechargeStatus() 
+    public Integer getRechargeStatus()
     {
         return rechargeStatus;
     }

@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.GptBalanceOrderMapper">
-    
+
     <resultMap type="GptBalanceOrder" id="GptBalanceOrderResult">
         <result property="orderId"    column="order_id"    />
         <result property="userId"    column="user_id"    />
@@ -18,19 +18,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectGptBalanceOrderList" parameterType="GptBalanceOrder" resultMap="GptBalanceOrderResult">
         <include refid="selectGptBalanceOrderVo"/>
-        <where>  
+        <where>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="rechargeAmount != null "> and recharge_amount = #{rechargeAmount}</if>
             <if test="rechargeTime != null "> and recharge_time = #{rechargeTime}</if>
             <if test="rechargeStatus != null "> and recharge_status = #{rechargeStatus}</if>
         </where>
     </select>
-    
+
     <select id="selectGptBalanceOrderByOrderId" parameterType="Long" resultMap="GptBalanceOrderResult">
         <include refid="selectGptBalanceOrderVo"/>
         where order_id = #{orderId}
     </select>
-        
+    <select id="selectByOutTradeNo" resultType="com.ruoyi.system.domain.GptBalanceOrder">
+        select * from gpt_balance_order where #{orderCode}
+    </select>
+
     <insert id="insertGptBalanceOrder" parameterType="GptBalanceOrder" useGeneratedKeys="true" keyProperty="orderId">
         insert into gpt_balance_order
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -63,7 +66,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteGptBalanceOrderByOrderIds" parameterType="String">
-        delete from gpt_balance_order where order_id in 
+        delete from gpt_balance_order where order_id in
         <foreach item="orderId" collection="array" open="(" separator="," close=")">
             #{orderId}
         </foreach>
