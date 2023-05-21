@@ -23,10 +23,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
-public class DiscordEventListener extends ListenerAdapter  {
+public class DiscordEventListener extends ListenerAdapter {
 
     @Autowired
-    private RedisTemplate<String,String> redisTemplate;
+    private RedisTemplate<String, String> redisTemplate;
 
     private static final String KEY_PREFIX = "mj-task::";
 
@@ -40,7 +40,7 @@ public class DiscordEventListener extends ListenerAdapter  {
             }
             String taskId = ConvertUtils.findTaskIdByFinalPrompt(messageData.getPrompt());
 
-            Task task = JSONObject.parseObject(redisTemplate.opsForValue().get(taskId),Task.class);
+            Task task = JSONObject.parseObject(redisTemplate.opsForValue().get(KEY_PREFIX + taskId), Task.class);
             if (task == null) {
                 return;
             }
@@ -50,7 +50,7 @@ public class DiscordEventListener extends ListenerAdapter  {
             } else {
                 finishTask(task, message);
             }
-            redisTemplate.opsForValue().set(taskId,JSONObject.toJSONString(task), 60*60);
+            redisTemplate.opsForValue().set(KEY_PREFIX + taskId, JSONObject.toJSONString(task), 60 * 60);
         } else if (MessageType.INLINE_REPLY.equals(message.getType()) && message.getReferencedMessage() != null) {
             String content = message.getContentRaw();
             MessageData data = ConvertUtils.matchImagineContent(content);
@@ -76,7 +76,7 @@ public class DiscordEventListener extends ListenerAdapter  {
                 return;
             }
             task.setStatus(TaskStatus.IN_PROGRESS);
-            redisTemplate.opsForValue().set(task.getKey(),JSONObject.toJSONString(task),60*60);
+            redisTemplate.opsForValue().set(task.getKey(), JSONObject.toJSONString(task), 60 * 60);
         }
         System.out.printf("[%s][%s] %s: %s\n", event.getGuild().getName(),
                 event.getGuildChannel().getName(),
