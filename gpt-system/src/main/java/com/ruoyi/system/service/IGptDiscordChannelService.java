@@ -7,7 +7,7 @@ import com.ruoyi.system.domain.GptDiscordChannel;
  * Discord 频道Service接口
  * 
  * @author GptAdmin
- * @date 2023-05-16
+ * @date 2023-05-20
  */
 public interface IGptDiscordChannelService 
 {

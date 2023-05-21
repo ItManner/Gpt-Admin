@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
+    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="88px">
       <el-form-item label="服务器ID" prop="discordServerId">
         <el-input
           v-model="queryParams.discordServerId"
@@ -17,6 +17,14 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
+      <el-form-item label="Token" prop="discordToken">
+        <el-input
+          v-model="queryParams.discordToken"
+          placeholder="请输入Discord Token"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
       <el-form-item label="创建时间" prop="createdTime">
         <el-date-picker clearable
           v-model="queryParams.createdTime"
@@ -24,6 +32,14 @@
           value-format="yyyy-MM-dd"
           placeholder="请选择创建时间">
         </el-date-picker>
+      </el-form-item>
+      <el-form-item label="服务器名称" prop="serviceName">
+        <el-input
+          v-model="queryParams.serviceName"
+          placeholder="请输入服务器名称"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -79,15 +95,17 @@
 
     <el-table v-loading="loading" :data="discordList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="Discord 服务器ID" align="center" prop="discordServerId" />
-      <el-table-column label="Discord 频道ID" align="center" prop="discordChannelId" />
-      <el-table-column label="Discord Bot Token" align="center" prop="discordToken" />
-      <el-table-column label="创建时间" align="center" prop="createdTime" width="180">
+      <el-table-column label="编号" align="center" prop="id" width="200"/>
+      <el-table-column label="服务器ID" align="center" prop="discordServerId" width="300"/>
+      <el-table-column label="频道ID" align="center" prop="discordChannelId" width="300"/>
+      <el-table-column label="Token" align="center" prop="discordToken" width="700"/>
+      <el-table-column label="创建时间" align="center" prop="createdTime" width="250">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.createdTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+      <el-table-column label="服务器名称" align="center" prop="serviceName" width="300"  />
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width" >
         <template slot-scope="scope">
           <el-button
             size="mini"
@@ -116,16 +134,19 @@
     />
 
     <!-- 添加或修改Discord 频道对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-form-item label="服务器ID" prop="discordServerId">
           <el-input v-model="form.discordServerId" placeholder="请输入Discord 服务器ID" />
         </el-form-item>
         <el-form-item label="频道ID" prop="discordChannelId">
           <el-input v-model="form.discordChannelId" placeholder="请输入Discord 频道ID" />
         </el-form-item>
-        <el-form-item label="Token" prop="discordToken">
-          <el-input v-model="form.discordToken" placeholder="请输入Discord Bot Token" />
+        <el-form-item label="Discord Token" prop="discordToken">
+          <el-input v-model="form.discordToken" placeholder="请输入Discord Token" />
+        </el-form-item>
+        <el-form-item label="服务器名称" prop="serviceName">
+          <el-input v-model="form.serviceName" placeholder="请输入服务器名称" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -169,6 +190,7 @@ export default {
         discordChannelId: null,
         discordToken: null,
         createdTime: null,
+        serviceName: null
       },
       // 表单参数
       form: {},
@@ -181,7 +203,7 @@ export default {
           { required: true, message: "Discord 频道ID不能为空", trigger: "blur" }
         ],
         discordToken: [
-          { required: true, message: "Discord Bot Token不能为空", trigger: "blur" }
+          { required: true, message: "Discord Token不能为空", trigger: "blur" }
         ],
         createdTime: [
           { required: true, message: "创建时间不能为空", trigger: "blur" }
@@ -215,7 +237,8 @@ export default {
         discordChannelId: null,
         discordToken: null,
         createdTime: null,
-        delFlag: null
+        delFlag: null,
+        serviceName: null
       };
       this.resetForm("form");
     },

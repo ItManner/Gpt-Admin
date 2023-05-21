@@ -3,35 +3,42 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.GptBalanceOrderMapper">
-
+    
     <resultMap type="GptBalanceOrder" id="GptBalanceOrderResult">
         <result property="orderId"    column="order_id"    />
         <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
         <result property="rechargeAmount"    column="recharge_amount"    />
         <result property="rechargeTime"    column="recharge_time"    />
         <result property="rechargeStatus"    column="recharge_status"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="goodsTitle"    column="goods_title"    />
     </resultMap>
 
     <sql id="selectGptBalanceOrderVo">
-        select order_id, user_id, recharge_amount, recharge_time, recharge_status from gpt_balance_order
+        select bo.order_id, u.user_name, bo.recharge_amount, bo.recharge_time, bo.recharge_status, bo.order_code, bo.goods_title from gpt_balance_order as bo left join sys_user u on u.user_id = bo.user_id
     </sql>
 
     <select id="selectGptBalanceOrderList" parameterType="GptBalanceOrder" resultMap="GptBalanceOrderResult">
         <include refid="selectGptBalanceOrderVo"/>
-        <where>
-            <if test="userId != null "> and user_id = #{userId}</if>
-            <if test="rechargeAmount != null "> and recharge_amount = #{rechargeAmount}</if>
-            <if test="rechargeTime != null "> and recharge_time = #{rechargeTime}</if>
-            <if test="rechargeStatus != null "> and recharge_status = #{rechargeStatus}</if>
+        <where>  
+            <if test="userId != null "> and bo.user_id = #{userId}</if>
+            <if test="userName != null "> and u.user_name = #{userName}</if>
+            <if test="rechargeAmount != null "> and bo.recharge_amount = #{rechargeAmount}</if>
+            <if test="rechargeTime != null "> and bo.recharge_time = #{rechargeTime}</if>
+            <if test="rechargeStatus != null "> and bo.recharge_status = #{rechargeStatus}</if>
+            <if test="orderCode != null  and orderCode != ''"> and bo.order_code = #{orderCode}</if>
+            <if test="goodsTitle != null  and goodsTitle != ''"> and bo.goods_title = #{goodsTitle}</if>
         </where>
     </select>
-
+    
     <select id="selectGptBalanceOrderByOrderId" parameterType="Long" resultMap="GptBalanceOrderResult">
         <include refid="selectGptBalanceOrderVo"/>
         where order_id = #{orderId}
     </select>
-    <select id="selectByOutTradeNo" resultType="com.ruoyi.system.domain.GptBalanceOrder">
-        select * from gpt_balance_order where #{orderCode}
+    <select id="selectByOutTradeNo" parameterType="Long" resultMap="GptBalanceOrderResult">
+        <include refid="selectGptBalanceOrderVo"/>
+        where order_code = #{orderCode}
     </select>
 
     <insert id="insertGptBalanceOrder" parameterType="GptBalanceOrder" useGeneratedKeys="true" keyProperty="orderId">
@@ -41,12 +48,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="rechargeAmount != null">recharge_amount,</if>
             <if test="rechargeTime != null">recharge_time,</if>
             <if test="rechargeStatus != null">recharge_status,</if>
+            <if test="orderCode != null">order_code,</if>
+            <if test="goodsTitle != null">goods_title,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">#{userId},</if>
             <if test="rechargeAmount != null">#{rechargeAmount},</if>
             <if test="rechargeTime != null">#{rechargeTime},</if>
             <if test="rechargeStatus != null">#{rechargeStatus},</if>
+            <if test="orderCode != null">#{orderCode},</if>
+            <if test="goodsTitle != null">#{goodsTitle},</if>
          </trim>
     </insert>
 
@@ -57,8 +68,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="rechargeAmount != null">recharge_amount = #{rechargeAmount},</if>
             <if test="rechargeTime != null">recharge_time = #{rechargeTime},</if>
             <if test="rechargeStatus != null">recharge_status = #{rechargeStatus},</if>
+            <if test="orderCode != null">order_code = #{orderCode},</if>
+            <if test="goodsTitle != null">goods_title = #{goodsTitle},</if>
         </trim>
         where order_id = #{orderId}
+    </update>
+    <update id="updateGptBalanceOrderByOrderCode">
+        update gpt_balance_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="rechargeAmount != null">recharge_amount = #{rechargeAmount},</if>
+            <if test="rechargeTime != null">recharge_time = #{rechargeTime},</if>
+            <if test="rechargeStatus != null">recharge_status = #{rechargeStatus},</if>
+            <if test="orderCode != null">order_code = #{orderCode},</if>
+            <if test="goodsTitle != null">goods_title = #{goodsTitle},</if>
+        </trim>
+        where order_code = #{orderCode}
     </update>
 
     <delete id="deleteGptBalanceOrderByOrderId" parameterType="Long">
@@ -66,7 +91,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteGptBalanceOrderByOrderIds" parameterType="String">
-        delete from gpt_balance_order where order_id in
+        delete from gpt_balance_order where order_id in 
         <foreach item="orderId" collection="array" open="(" separator="," close=")">
             #{orderId}
         </foreach>

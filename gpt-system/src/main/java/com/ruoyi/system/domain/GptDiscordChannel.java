@@ -11,7 +11,7 @@ import com.ruoyi.common.core.domain.BaseEntity;
  * Discord 频道对象 gpt_discord_channel
  * 
  * @author GptAdmin
- * @date 2023-05-16
+ * @date 2023-05-20
  */
 public class GptDiscordChannel extends BaseEntity
 {
@@ -28,8 +28,8 @@ public class GptDiscordChannel extends BaseEntity
     @Excel(name = "Discord 频道ID")
     private String discordChannelId;
 
-    /** Discord Bot Token */
-    @Excel(name = "Discord Bot Token")
+    /** Discord Token */
+    @Excel(name = "Discord Token")
     private String discordToken;
 
     /** 创建时间 */
@@ -39,6 +39,10 @@ public class GptDiscordChannel extends BaseEntity
 
     /** 删除标识 */
     private String delFlag;
+
+    /** 服务器名称 */
+    @Excel(name = "服务器名称")
+    private String serviceName;
 
     public void setId(Long id) 
     {
@@ -94,6 +98,15 @@ public class GptDiscordChannel extends BaseEntity
     {
         return delFlag;
     }
+    public void setServiceName(String serviceName) 
+    {
+        this.serviceName = serviceName;
+    }
+
+    public String getServiceName() 
+    {
+        return serviceName;
+    }
 
     @Override
     public String toString() {
@@ -104,6 +117,7 @@ public class GptDiscordChannel extends BaseEntity
             .append("discordToken", getDiscordToken())
             .append("createdTime", getCreatedTime())
             .append("delFlag", getDelFlag())
+            .append("serviceName", getServiceName())
             .toString();
     }
 }

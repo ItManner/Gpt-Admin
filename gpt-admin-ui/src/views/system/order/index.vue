@@ -1,14 +1,6 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="用户ID" prop="userId">
-        <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入用户ID"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
       <el-form-item label="充值金额" prop="rechargeAmount">
         <el-input
           v-model="queryParams.rechargeAmount"
@@ -24,6 +16,32 @@
           value-format="yyyy-MM-dd"
           placeholder="请选择充值时间">
         </el-date-picker>
+      </el-form-item>
+      <el-form-item label="充值状态" prop="rechargeStatus">
+        <el-select v-model="queryParams.rechargeStatus" placeholder="请选择充值状态" clearable>
+          <el-option
+            v-for="dict in dict.type.order_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item label="订单号" prop="orderCode">
+        <el-input
+          v-model="queryParams.orderCode"
+          placeholder="请输入商户订单号"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="商品标题" prop="goodsTitle">
+        <el-input
+          v-model="queryParams.goodsTitle"
+          placeholder="请输入商品订单标题"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -79,32 +97,33 @@
 
     <el-table v-loading="loading" :data="orderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="用户ID" align="center" prop="userId" />
+      <el-table-column label="商户订单号" align="center" prop="orderCode" />
+      <el-table-column label="商品订单标题" align="center" prop="goodsTitle" />
+      <el-table-column label="充值用户" align="center" prop="userName" />
       <el-table-column label="充值金额" align="center" prop="rechargeAmount" />
       <el-table-column label="充值时间" align="center" prop="rechargeTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.rechargeTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="充值状态" align="center" prop="rechargeStatus" />
-<!--      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">-->
-<!--        <template slot-scope="scope">-->
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-edit"-->
-<!--            @click="handleUpdate(scope.row)"-->
-<!--            v-hasPermi="['system:order:edit']"-->
-<!--          >修改</el-button>-->
-<!--          <el-button-->
-<!--            size="mini"-->
-<!--            type="text"-->
-<!--            icon="el-icon-delete"-->
-<!--            @click="handleDelete(scope.row)"-->
-<!--            v-hasPermi="['system:order:remove']"-->
-<!--          >删除</el-button>-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <el-table-column label="充值状态" align="center" prop="rechargeStatus">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.order_status" :value="scope.row.rechargeStatus"/>
+        </template>
+      </el-table-column>
+
+
+      <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
+        <template slot-scope="scope">
+          <el-button
+            size="mini"
+            type="text"
+            icon="el-icon-delete"
+            @click="handleDelete(scope.row)"
+            v-hasPermi="['system:order:remove']"
+          >删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -118,9 +137,6 @@
     <!-- 添加或修改余额充值订单对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户ID" />
-        </el-form-item>
         <el-form-item label="充值金额" prop="rechargeAmount">
           <el-input v-model="form.rechargeAmount" placeholder="请输入充值金额" />
         </el-form-item>
@@ -131,6 +147,21 @@
             value-format="yyyy-MM-dd"
             placeholder="请选择充值时间">
           </el-date-picker>
+        </el-form-item>
+        <el-form-item label="充值状态" prop="rechargeStatus">
+          <el-radio-group v-model="form.rechargeStatus">
+            <el-radio
+              v-for="dict in dict.type.order_status"
+              :key="dict.value"
+              :label="parseInt(dict.value)"
+            >{{dict.label}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="商户订单号" prop="orderCode">
+          <el-input v-model="form.orderCode" placeholder="请输入商户订单号" />
+        </el-form-item>
+        <el-form-item label="商品订单标题" prop="goodsTitle">
+          <el-input v-model="form.goodsTitle" placeholder="请输入商品订单标题" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -146,6 +177,7 @@ import { listOrder, getOrder, delOrder, addOrder, updateOrder } from "@/api/syst
 
 export default {
   name: "Order",
+  dicts: ['order_status'],
   data() {
     return {
       // 遮罩层
@@ -173,7 +205,9 @@ export default {
         userId: null,
         rechargeAmount: null,
         rechargeTime: null,
-        rechargeStatus: null
+        rechargeStatus: null,
+        orderCode: null,
+        goodsTitle: null
       },
       // 表单参数
       form: {},
@@ -190,7 +224,7 @@ export default {
         ],
         rechargeStatus: [
           { required: true, message: "充值状态不能为空", trigger: "change" }
-        ]
+        ],
       }
     };
   },
@@ -219,7 +253,9 @@ export default {
         userId: null,
         rechargeAmount: null,
         rechargeTime: null,
-        rechargeStatus: null
+        rechargeStatus: null,
+        orderCode: null,
+        goodsTitle: null
       };
       this.resetForm("form");
     },

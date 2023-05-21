@@ -11,9 +11,9 @@ import com.ruoyi.common.core.domain.BaseEntity;
 
 /**
  * 余额充值订单对象 gpt_balance_order
- *
+ * 
  * @author GptAdmin
- * @date 2023-05-16
+ * @date 2023-05-20
  */
 @Data
 public class GptBalanceOrder extends BaseEntity
@@ -24,8 +24,11 @@ public class GptBalanceOrder extends BaseEntity
     private Long orderId;
 
     /** 用户ID */
-    @Excel(name = "用户ID")
     private Long userId;
+
+    /** 用户名称 */
+    @Excel(name = "用户名称")
+    private String userName;
 
     /** 充值金额 */
     @Excel(name = "充值金额")
@@ -40,7 +43,6 @@ public class GptBalanceOrder extends BaseEntity
     @Excel(name = "充值状态", readConverterExp = "0=：待处理，1：已处理")
     private Integer rechargeStatus;
 
-
     /** 商户订单号 */
     @Excel(name = "商户订单号")
     private String orderCode;
@@ -49,50 +51,68 @@ public class GptBalanceOrder extends BaseEntity
     @Excel(name = "商品订单标题")
     private String goodsTitle;
 
-    public void setOrderId(Long orderId)
+    public void setOrderId(Long orderId) 
     {
         this.orderId = orderId;
     }
 
-    public Long getOrderId()
+    public Long getOrderId() 
     {
         return orderId;
     }
-    public void setUserId(Long userId)
+    public void setUserId(Long userId) 
     {
         this.userId = userId;
     }
 
-    public Long getUserId()
+    public Long getUserId() 
     {
         return userId;
     }
-    public void setRechargeAmount(BigDecimal rechargeAmount)
+    public void setRechargeAmount(BigDecimal rechargeAmount) 
     {
         this.rechargeAmount = rechargeAmount;
     }
 
-    public BigDecimal getRechargeAmount()
+    public BigDecimal getRechargeAmount() 
     {
         return rechargeAmount;
     }
-    public void setRechargeTime(Date rechargeTime)
+    public void setRechargeTime(Date rechargeTime) 
     {
         this.rechargeTime = rechargeTime;
     }
 
-    public Date getRechargeTime()
+    public Date getRechargeTime() 
     {
         return rechargeTime;
     }
-    public void setRechargeStatus(Integer rechargeStatus)
+    public void setRechargeStatus(Integer rechargeStatus) 
     {
         this.rechargeStatus = rechargeStatus;
     }
 
-    public Integer getRechargeStatus()
+    public Integer getRechargeStatus() 
     {
         return rechargeStatus;
+    }
+    public void setOrderCode(String orderCode) 
+    {
+        this.orderCode = orderCode;
+    }
+
+    public String getOrderCode() 
+    {
+        return orderCode;
+    }
+    public void setGoodsTitle(String goodsTitle) 
+    {
+        this.goodsTitle = goodsTitle;
+    }
+
+    public String getGoodsTitle() 
+    {
+        return goodsTitle;
     }
 
     @Override
@@ -103,6 +123,8 @@ public class GptBalanceOrder extends BaseEntity
             .append("rechargeAmount", getRechargeAmount())
             .append("rechargeTime", getRechargeTime())
             .append("rechargeStatus", getRechargeStatus())
+            .append("orderCode", getOrderCode())
+            .append("goodsTitle", getGoodsTitle())
             .toString();
     }
 }

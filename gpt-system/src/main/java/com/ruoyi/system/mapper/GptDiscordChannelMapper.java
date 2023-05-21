@@ -7,7 +7,7 @@ import com.ruoyi.system.domain.GptDiscordChannel;
  * Discord 频道Mapper接口
  * 
  * @author GptAdmin
- * @date 2023-05-16
+ * @date 2023-05-20
  */
 public interface GptDiscordChannelMapper 
 {
@@ -58,4 +58,6 @@ public interface GptDiscordChannelMapper
      * @return 结果
      */
     public int deleteGptDiscordChannelByIds(Long[] ids);
+
+
 }

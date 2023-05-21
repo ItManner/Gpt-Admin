@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.GptOpenaiConfigMapper">
+    
+    <resultMap type="GptOpenaiConfig" id="GptOpenaiConfigResult">
+        <result property="id"    column="id"    />
+        <result property="openaiKey"    column="openai_key"    />
+        <result property="model"    column="model"    />
+        <result property="maxToken"    column="max_token"    />
+        <result property="temperature"    column="temperature"    />
+        <result property="timeout"    column="timeout"    />
+    </resultMap>
+
+    <sql id="selectGptOpenaiConfigVo">
+        select id, openai_key, model, max_token, temperature, timeout from gpt_openai_config
+    </sql>
+
+    <select id="selectGptOpenaiConfigList" parameterType="GptOpenaiConfig" resultMap="GptOpenaiConfigResult">
+        <include refid="selectGptOpenaiConfigVo"/>
+        <where>  
+            <if test="openaiKey != null  and openaiKey != ''"> and openai_key = #{openaiKey}</if>
+            <if test="model != null  and model != ''"> and model = #{model}</if>
+            <if test="maxToken != null  and maxToken != ''"> and max_token = #{maxToken}</if>
+            <if test="temperature != null  and temperature != ''"> and temperature = #{temperature}</if>
+            <if test="timeout != null  and timeout != ''"> and timeout = #{timeout}</if>
+        </where>
+    </select>
+    
+    <select id="selectGptOpenaiConfigById" parameterType="Long" resultMap="GptOpenaiConfigResult">
+        <include refid="selectGptOpenaiConfigVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectList" resultType="com.ruoyi.system.domain.GptOpenaiConfig">
+        select * from gpt_openai_config
+    </select>
+
+    <insert id="insertGptOpenaiConfig" parameterType="GptOpenaiConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into gpt_openai_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="openaiKey != null">openai_key,</if>
+            <if test="model != null">model,</if>
+            <if test="maxToken != null">max_token,</if>
+            <if test="temperature != null">temperature,</if>
+            <if test="timeout != null">timeout,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="openaiKey != null">#{openaiKey},</if>
+            <if test="model != null">#{model},</if>
+            <if test="maxToken != null">#{maxToken},</if>
+            <if test="temperature != null">#{temperature},</if>
+            <if test="timeout != null">#{timeout},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGptOpenaiConfig" parameterType="GptOpenaiConfig">
+        update gpt_openai_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="openaiKey != null">openai_key = #{openaiKey},</if>
+            <if test="model != null">model = #{model},</if>
+            <if test="maxToken != null">max_token = #{maxToken},</if>
+            <if test="temperature != null">temperature = #{temperature},</if>
+            <if test="timeout != null">timeout = #{timeout},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGptOpenaiConfigById" parameterType="Long">
+        delete from gpt_openai_config where id = #{id}
+    </delete>
+
+    <delete id="deleteGptOpenaiConfigByIds" parameterType="String">
+        delete from gpt_openai_config where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

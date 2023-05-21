@@ -14,7 +14,9 @@ ruoyi:
   addressEnabled: false
   # 验证码类型 math 数组计算 char 字符验证
   captchaType: math
-
+discord:
+  bot:
+    token: MTEwOTQwMTc2MDAyNTU0NjgxMw.GdRwg1.nSRKgvDiv23LkV5ScRM0N9fM7Teol8FW7yl6Zc
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080

@@ -1,6 +1,7 @@
 package com.ruoyi.web.controller.pay;
 
 import com.jeequan.jeepay.exception.JeepayException;
+import com.ruoyi.common.annotation.Anonymous;
 import com.ruoyi.system.domain.GptBalanceOrder;
 import com.ruoyi.system.service.JeePayService;
 import io.swagger.annotations.Api;
@@ -21,22 +22,23 @@ import java.util.Map;
 @RestController()
 public class JeePayController {
 
-    @Autowired
-    private JeePayService jeePayService;
+    private final JeePayService jeePayService;
+
+    public JeePayController(JeePayService jeePayService) {
+        this.jeePayService = jeePayService;
+    }
 
     /**
      * 扫码下单
-     *
-     * @param orderInfoDto
-     * @return
-     * @throws JeepayException
      */
     @PostMapping("/scanPay")
+    @Anonymous
     public String scanPay(@RequestBody GptBalanceOrder orderInfoDto) throws JeepayException {
         return jeePayService.scanPay(orderInfoDto);
     }
 
     @ApiOperation("支付回调")
+    @Anonymous
     @PostMapping("/tradeNotify")
     public String tradeNotify(HttpServletRequest req) {
         return jeePayService.tradeNotify(req);

@@ -13,6 +13,7 @@
     <description>GptAdmin</description>
 
     <properties>
+        <openai-gpt3-java.version>0.12.0</openai-gpt3-java.version>
         <ruoyi.version>3.8.5</ruoyi.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -142,6 +143,18 @@
                 <version>${jwt.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>5.8.16</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.theokanning.openai-gpt3-java</groupId>
+                <artifactId>service</artifactId>
+                <version>${openai-gpt3-java.version}</version>
+            </dependency>
+
             <!-- 验证码 -->
             <dependency>
                 <groupId>pro.fessional</groupId>
@@ -182,6 +195,25 @@
                 <groupId>com.ruoyi</groupId>
                 <artifactId>gpt-common</artifactId>
                 <version>${ruoyi.version}</version>
+            </dependency>
+
+            <!-- 通用工具-->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>gpt-admin</artifactId>
+                <version>3.8.5</version>
+            </dependency>
+
+            <dependency>
+                <groupId>net.dv8tion</groupId>
+                <artifactId>JDA</artifactId>
+                <version>5.0.0-beta.9</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>club.minnced</groupId>
+                        <artifactId>opus-java</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
         </dependencies>

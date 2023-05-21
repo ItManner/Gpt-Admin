@@ -6,15 +6,15 @@ import org.apache.ibatis.annotations.Param;
 
 /**
  * 余额充值订单Mapper接口
- *
+ * 
  * @author GptAdmin
- * @date 2023-05-16
+ * @date 2023-05-20
  */
-public interface GptBalanceOrderMapper
+public interface GptBalanceOrderMapper 
 {
     /**
      * 查询余额充值订单
-     *
+     * 
      * @param orderId 余额充值订单主键
      * @return 余额充值订单
      */
@@ -22,7 +22,7 @@ public interface GptBalanceOrderMapper
 
     /**
      * 查询余额充值订单列表
-     *
+     * 
      * @param gptBalanceOrder 余额充值订单
      * @return 余额充值订单集合
      */
@@ -30,7 +30,7 @@ public interface GptBalanceOrderMapper
 
     /**
      * 新增余额充值订单
-     *
+     * 
      * @param gptBalanceOrder 余额充值订单
      * @return 结果
      */
@@ -38,7 +38,7 @@ public interface GptBalanceOrderMapper
 
     /**
      * 修改余额充值订单
-     *
+     * 
      * @param gptBalanceOrder 余额充值订单
      * @return 结果
      */
@@ -46,7 +46,7 @@ public interface GptBalanceOrderMapper
 
     /**
      * 删除余额充值订单
-     *
+     * 
      * @param orderId 余额充值订单主键
      * @return 结果
      */
@@ -54,11 +54,13 @@ public interface GptBalanceOrderMapper
 
     /**
      * 批量删除余额充值订单
-     *
+     * 
      * @param orderIds 需要删除的数据主键集合
      * @return 结果
      */
     public int deleteGptBalanceOrderByOrderIds(Long[] orderIds);
 
-    List<GptBalanceOrder> selectByOutTradeNo(@Param("orderCode") String mchOrderNo);
+    int updateGptBalanceOrderByOrderCode(GptBalanceOrder gptBalanceOrder);
+
+    GptBalanceOrder selectByOutTradeNo(@Param("orderCode") String mchOrderNo);
 }

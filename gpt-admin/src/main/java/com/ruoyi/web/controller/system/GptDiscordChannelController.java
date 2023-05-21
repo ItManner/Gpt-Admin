@@ -1,5 +1,6 @@
 package com.ruoyi.web.controller.system;
 
+import java.util.Date;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -23,9 +24,9 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * Discord 频道Controller
- *
+ * 
  * @author GptAdmin
- * @date 2023-05-16
+ * @date 2023-05-20
  */
 @RestController
 @RequestMapping("/system/discord")
@@ -77,6 +78,7 @@ public class GptDiscordChannelController extends BaseController
     @PostMapping
     public AjaxResult add(@RequestBody GptDiscordChannel gptDiscordChannel)
     {
+        gptDiscordChannel.setCreatedTime(new Date());
         return toAjax(gptDiscordChannelService.insertGptDiscordChannel(gptDiscordChannel));
     }
 
@@ -88,6 +90,7 @@ public class GptDiscordChannelController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody GptDiscordChannel gptDiscordChannel)
     {
+        gptDiscordChannel.setUpdateTime(new Date());
         return toAjax(gptDiscordChannelService.updateGptDiscordChannel(gptDiscordChannel));
     }
 
