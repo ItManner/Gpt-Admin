@@ -58,4 +58,5 @@ public interface SysUserBalanceMapper
      * @return 结果
      */
     public int deleteSysUserBalanceByIds(Long[] ids);
+
 }

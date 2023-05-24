@@ -63,4 +63,5 @@ public interface ISysUserBalanceService
 
     void initUserBalance(SysUser sysUser);
 
+    SysUserBalance selectSysUserBalanceByUserId(Long userId);
 }

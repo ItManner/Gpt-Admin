@@ -11,7 +11,6 @@ import com.jeequan.jeepay.request.PayOrderCreateRequest;
 import com.jeequan.jeepay.response.PayOrderCreateResponse;
 import com.jeequan.jeepay.util.JeepayKit;
 import com.ruoyi.common.qrcode.QRBtf;
-import com.ruoyi.common.qrcode.Shape;
 import com.ruoyi.common.qrcode.renderer.Renderer;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.GptBalanceOrder;
@@ -193,8 +192,7 @@ public class JeePayServiceImpl implements JeePayService {
 
     public String handleQrcode(String url)  {
         try {
-        Renderer renderer = Renderer.funcB().adjust()
-                .dataPointShape(Shape.CIRCLE)
+        Renderer renderer = Renderer.line().adjust()
                 .end();
 
         QRBtf qrBtf = new QRBtf(renderer);

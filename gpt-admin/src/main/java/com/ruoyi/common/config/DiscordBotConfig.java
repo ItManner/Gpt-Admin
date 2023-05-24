@@ -14,14 +14,11 @@ import org.springframework.context.annotation.Configuration;
 import javax.annotation.Resource;
 import javax.security.auth.login.LoginException;
 
-@Configuration
+//@Configuration
 public class DiscordBotConfig {
 
     @Value("${discord.bot.token}")
     private String discordBotToken;
-
-
-
     @Resource
     private DiscordEventListener discordMessageListener;
 

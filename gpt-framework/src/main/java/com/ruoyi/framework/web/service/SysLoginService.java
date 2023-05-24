@@ -1,6 +1,10 @@
 package com.ruoyi.framework.web.service;
 
 import javax.annotation.Resource;
+
+import com.alibaba.fastjson.JSONObject;
+import com.ruoyi.common.core.domain.entity.SysUserBalance;
+import com.ruoyi.system.service.ISysUserBalanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,10 +32,11 @@ import com.ruoyi.framework.manager.factory.AsyncFactory;
 import com.ruoyi.framework.security.context.AuthenticationContextHolder;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysUserService;
+import org.springframework.util.ObjectUtils;
 
 /**
  * 登录校验方法
- * 
+ *
  * @author ruoyi
  */
 @Component
@@ -45,23 +50,25 @@ public class SysLoginService
 
     @Autowired
     private RedisCache redisCache;
-    
+
     @Autowired
     private ISysUserService userService;
 
     @Autowired
     private ISysConfigService configService;
+    @Autowired
+    private ISysUserBalanceService iSysUserBalanceService;
 
     /**
      * 登录验证
-     * 
+     *
      * @param username 用户名
      * @param password 密码
      * @param code 验证码
      * @param uuid 唯一标识
      * @return 结果
      */
-    public String login(String username, String password, String code, String uuid)
+    public JSONObject login(String username, String password, String code, String uuid)
     {
         // 验证码校验
         validateCaptcha(username, code, uuid);
@@ -97,12 +104,25 @@ public class SysLoginService
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         recordLoginInfo(loginUser.getUserId());
         // 生成token
-        return tokenService.createToken(loginUser);
+        String token = tokenService.createToken(loginUser);
+        JSONObject result = new JSONObject();
+        result.put("token",token);
+        JSONObject userInfo = new JSONObject();
+        userInfo.put("id", loginUser.getUserId());
+        userInfo.put("account", loginUser.getUser().getUserName());
+        userInfo.put("nickname", loginUser.getUser().getNickName());
+        userInfo.put("avatar", loginUser.getUser().getAvatar());
+        userInfo.put("role", ObjectUtils.isEmpty(loginUser.getUser().getRoles()) ? "user":loginUser.getUser().getRoles().get(0).getRoleKey());
+        userInfo.put("status", loginUser.getUser().getStatus());
+        SysUserBalance balance = iSysUserBalanceService.selectSysUserBalanceByUserId(loginUser.getUserId());
+        userInfo.put("integral", balance.getBalance());
+        result.put("user_info",userInfo);
+        return result;
     }
 
     /**
      * 校验验证码
-     * 
+     *
      * @param username 用户名
      * @param code 验证码
      * @param uuid 唯一标识

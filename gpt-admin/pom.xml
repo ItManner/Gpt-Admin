@@ -24,6 +24,10 @@
             <optional>true</optional> <!-- 表示依赖不会传递 -->
         </dependency>
 
+        <dependency>
+            <groupId>com.github.plexpt</groupId>
+            <artifactId>chatgpt</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>

@@ -106,4 +106,9 @@ public class SysUserBalanceServiceImpl implements ISysUserBalanceService
         sysUserBalance.setConsumptionTimes(0L);
         sysUserBalanceMapper.insertSysUserBalance(sysUserBalance);
     }
+
+    @Override
+    public SysUserBalance selectSysUserBalanceByUserId(Long userId) {
+        return sysUserBalanceMapper.selectSysUserBalanceById(userId);
+    }
 }
