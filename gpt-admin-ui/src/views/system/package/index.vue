@@ -9,34 +9,10 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="套餐限制使用次数" prop="limitCount">
-        <el-input
-          v-model="queryParams.limitCount"
-          placeholder="请输入套餐限制使用次数"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="套餐金额" prop="amount">
-        <el-input
-          v-model="queryParams.amount"
-          placeholder="请输入套餐金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="套餐有效期" prop="validTime">
+      <el-form-item label="有效期" prop="validTime">
         <el-input
           v-model="queryParams.validTime"
           placeholder="请输入套餐有效期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="套餐描述" prop="description">
-        <el-input
-          v-model="queryParams.description"
-          placeholder="请输入套餐描述"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -120,7 +96,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"

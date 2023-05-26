@@ -17,7 +17,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="套餐剩余消费次数" prop="remainingCount">
+      <el-form-item label="剩余次数" prop="remainingCount">
         <el-input
           v-model="queryParams.remainingCount"
           placeholder="请输入套餐剩余消费次数"
@@ -25,21 +25,13 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="套餐到期时间" prop="expireTime">
+      <el-form-item label="到期时间" prop="expireTime">
         <el-date-picker clearable
           v-model="queryParams.expireTime"
           type="date"
           value-format="yyyy-MM-dd"
           placeholder="请选择套餐到期时间">
         </el-date-picker>
-      </el-form-item>
-      <el-form-item label="是否过期" prop="isExpire">
-        <el-input
-          v-model="queryParams.isExpire"
-          placeholder="请输入是否过期"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -48,7 +40,7 @@
     </el-form>
 
     <el-row :gutter="10" class="mb8">
-      <el-col :span="1.5">
+      <el-col :span="1.5" hidden="true">
         <el-button
           type="primary"
           plain
@@ -58,7 +50,7 @@
           v-hasPermi="['system:userPackage:add']"
         >新增</el-button>
       </el-col>
-      <el-col :span="1.5">
+      <el-col :span="1.5" hidden="true">
         <el-button
           type="success"
           plain
@@ -69,7 +61,7 @@
           v-hasPermi="['system:userPackage:edit']"
         >修改</el-button>
       </el-col>
-      <el-col :span="1.5">
+      <el-col :span="1.5" hidden="true">
         <el-button
           type="danger"
           plain
@@ -95,7 +87,6 @@
 
     <el-table v-loading="loading" :data="userPackageList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="关联表ID" align="center" prop="id" />
       <el-table-column label="用户ID" align="center" prop="userId" />
       <el-table-column label="套餐ID" align="center" prop="packageId" />
       <el-table-column label="套餐剩余消费次数" align="center" prop="remainingCount" />
@@ -108,6 +99,7 @@
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
+            hidden="true"
             size="mini"
             type="text"
             icon="el-icon-edit"
@@ -124,7 +116,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
