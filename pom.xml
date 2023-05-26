@@ -60,11 +60,6 @@
                 <version>1.5.0</version>
             </dependency>
 
-            <dependency>
-                <groupId>com.github.plexpt</groupId>
-                <artifactId>chatgpt</artifactId>
-                <version>4.0.8</version>
-            </dependency>
 
             <!-- 阿里数据库连接池 -->
             <dependency>

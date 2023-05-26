@@ -1,7 +1,7 @@
 package com.ruoyi.system.service;
 
 import com.jeequan.jeepay.exception.JeepayException;
-import com.ruoyi.system.domain.GptBalanceOrder;
+import com.ruoyi.system.domain.GptOrder;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,11 +14,10 @@ public interface JeePayService {
     /**
      * 统一生成订单接口,返回二维码
      *
-     * @param orderInfoDto
      * @return
      * @throws JeepayException
      */
-    String scanPay(GptBalanceOrder orderInfoDto) throws JeepayException;
+    String scanPay(String orderId) throws JeepayException;
 
     String tradeNotify(HttpServletRequest req);
 }

@@ -2,16 +2,15 @@ package com.ruoyi.web.controller.pay;
 
 import com.jeequan.jeepay.exception.JeepayException;
 import com.ruoyi.common.annotation.Anonymous;
-import com.ruoyi.system.domain.GptBalanceOrder;
+import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.domain.R;
+import com.ruoyi.system.domain.GptOrder;
 import com.ruoyi.system.service.JeePayService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 /**
  * @author:xianyu
@@ -31,16 +30,16 @@ public class JeePayController {
     /**
      * 扫码下单
      */
-    @PostMapping("/scanPay")
+    @GetMapping("/scanPay")
     @Anonymous
-    public String scanPay(@RequestBody GptBalanceOrder orderInfoDto) throws JeepayException {
-        return jeePayService.scanPay(orderInfoDto);
+    public AjaxResult scanPay(@RequestParam String orderId) throws JeepayException {
+        return AjaxResult.success(jeePayService.scanPay(orderId));
     }
 
     @ApiOperation("支付回调")
     @Anonymous
     @PostMapping("/tradeNotify")
-    public String tradeNotify(HttpServletRequest req) {
-        return jeePayService.tradeNotify(req);
+    public AjaxResult tradeNotify(HttpServletRequest req) {
+        return AjaxResult.success(jeePayService.tradeNotify(req),null);
     }
 }

@@ -1,9 +1,5 @@
 package com.ruoyi.framework.web.service;
 
-import com.ruoyi.system.mapper.SysUserBalanceMapper;
-import com.ruoyi.system.service.ISysDeptService;
-import com.ruoyi.system.service.ISysUserBalanceService;
-import com.ruoyi.system.service.impl.SysUserBalanceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.constant.CacheConstants;
@@ -38,9 +34,6 @@ public class SysRegisterService
 
     @Autowired
     private RedisCache redisCache;
-
-    @Autowired
-    private ISysUserBalanceService userBalanceService;
 
     /**
      * 注册
@@ -92,8 +85,6 @@ public class SysRegisterService
             }
             else
             {
-                //初始化用户余额信息
-                userBalanceService.initUserBalance(sysUser);
                 AsyncManager.me().execute(AsyncFactory.recordLogininfor(username, Constants.REGISTER, MessageUtils.message("user.register.success")));
             }
         }

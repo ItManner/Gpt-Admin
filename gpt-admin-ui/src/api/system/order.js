@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-// 查询余额充值订单列表
+// 查询订单列表
 export function listOrder(query) {
   return request({
     url: '/system/order/list',
@@ -9,15 +9,15 @@ export function listOrder(query) {
   })
 }
 
-// 查询余额充值订单详细
-export function getOrder(orderId) {
+// 查询订单详细
+export function getOrder(id) {
   return request({
-    url: '/system/order/' + orderId,
+    url: '/system/order/' + id,
     method: 'get'
   })
 }
 
-// 新增余额充值订单
+// 新增订单
 export function addOrder(data) {
   return request({
     url: '/system/order',
@@ -26,7 +26,7 @@ export function addOrder(data) {
   })
 }
 
-// 修改余额充值订单
+// 修改订单
 export function updateOrder(data) {
   return request({
     url: '/system/order',
@@ -35,10 +35,10 @@ export function updateOrder(data) {
   })
 }
 
-// 删除余额充值订单
-export function delOrder(orderId) {
+// 删除订单
+export function delOrder(id) {
   return request({
-    url: '/system/order/' + orderId,
+    url: '/system/order/' + id,
     method: 'delete'
   })
 }

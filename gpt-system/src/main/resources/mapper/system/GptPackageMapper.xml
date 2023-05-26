@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.GptPackageMapper">
+    
+    <resultMap type="GptPackage" id="GptPackageResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="limitCount"    column="limit_count"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="amount"    column="amount"    />
+        <result property="validTime"    column="valid_time"    />
+        <result property="description"    column="description"    />
+    </resultMap>
+
+    <sql id="selectGptPackageVo">
+        select id, name, limit_count, create_time, amount, valid_time, description from gpt_package
+    </sql>
+
+    <select id="selectGptPackageList" parameterType="GptPackage" resultMap="GptPackageResult">
+        <include refid="selectGptPackageVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="limitCount != null "> and limit_count = #{limitCount}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="validTime != null "> and valid_time = #{validTime}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+        </where>
+    </select>
+    
+    <select id="selectGptPackageById" parameterType="Long" resultMap="GptPackageResult">
+        <include refid="selectGptPackageVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertGptPackage" parameterType="GptPackage" useGeneratedKeys="true" keyProperty="id">
+        insert into gpt_package
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">name,</if>
+            <if test="limitCount != null">limit_count,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="amount != null">amount,</if>
+            <if test="validTime != null">valid_time,</if>
+            <if test="description != null and description != ''">description,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="limitCount != null">#{limitCount},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="validTime != null">#{validTime},</if>
+            <if test="description != null and description != ''">#{description},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGptPackage" parameterType="GptPackage">
+        update gpt_package
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="limitCount != null">limit_count = #{limitCount},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="validTime != null">valid_time = #{validTime},</if>
+            <if test="description != null and description != ''">description = #{description},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGptPackageById" parameterType="Long">
+        delete from gpt_package where id = #{id}
+    </delete>
+
+    <delete id="deleteGptPackageByIds" parameterType="String">
+        delete from gpt_package where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

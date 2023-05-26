@@ -142,13 +142,7 @@
           <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns[1].visible" :show-overflow-tooltip="true" />
           <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns[2].visible" :show-overflow-tooltip="true" />
           <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns[3].visible" :show-overflow-tooltip="true" />
-          <el-table-column label="用户余额" align="center" key="balance" prop="balance" v-if="columns[4].visible" width="100" />
-          <el-table-column label="余额过期时间" align="center" key="expiredTime" prop="expiredTime" v-if="columns[5].visible" width="100" />
-          <el-table-column label="总的充值金额" align="center" key="totalRecharge" prop="totalRecharge" v-if="columns[6].visible" width="100" />
-          <el-table-column label="总的消费金额" align="center" key="totalConsume" prop="totalConsume" v-if="columns[7].visible" width="100" />
-          <el-table-column label="消费次数" align="center" key="consumptionTimes" prop="consumptionTimes" v-if="columns[8].visible" width="100" />
-          <el-table-column label="最后消费时间" align="center" key="lastConsumptionTime" prop="lastConsumptionTime" v-if="columns[9].visible" width="100" />
-          <el-table-column label="状态" align="center" key="status" v-if="columns[10].visible">
+          <el-table-column label="状态" align="center" key="status" v-if="columns[4].visible">
             <template slot-scope="scope">
               <el-switch
                 v-model="scope.row.status"
@@ -158,7 +152,7 @@
               ></el-switch>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[11].visible" width="160">
+          <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns[5].visible" width="160">
             <template slot-scope="scope">
               <span>{{ parseTime(scope.row.createTime) }}</span>
             </template>
@@ -191,8 +185,6 @@
                     v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
                   <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
                     v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
-                  <el-dropdown-item command="handleRecharge" icon="el-icon-circle-check"
-                                    v-hasPermi="['system:user:recharge']">余额编辑</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
@@ -302,30 +294,6 @@
       </div>
     </el-dialog>
 
-    <!-- 添加或修改用户余额对话框 -->
-    <el-dialog :title="title" :visible.sync="balanceOpen" width="800px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="120px">
-        <el-form-item label="用户余额" prop="balance">
-          <el-input v-model="form.balance" placeholder="请输入用户余额" />
-        </el-form-item>
-        <el-form-item label="余额过期时间" prop="expiredTime">
-          <el-date-picker clearable
-                          v-model="form.expiredTime"
-                          type="date"
-                          value-format="yyyy-MM-dd"
-                          placeholder="请选择余额过期时间">
-          </el-date-picker>
-        </el-form-item>
-        <el-form-item label="总的充值金额" prop="totalRecharge">
-          <el-input v-model="form.totalRecharge" placeholder="请输入总的充值金额" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="balanceSubmitForm">确 定</el-button>
-        <el-button @click="balanceCancel">取 消</el-button>
-      </div>
-    </el-dialog>
-
     <!-- 用户导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
       <el-upload
@@ -363,7 +331,6 @@ import { listUser, getUser, delUser, addUser, updateUser, resetUserPwd, changeUs
 import { getToken } from "@/utils/auth";
 import Treeselect from "@riophae/vue-treeselect";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
-import {addBalance, getBalance, updateBalance} from "@/api/system/balance";
 
 export default {
   name: "User",
@@ -437,14 +404,8 @@ export default {
         { key: 1, label: `用户名称`, visible: true },
         { key: 2, label: `用户昵称`, visible: true },
         { key: 3, label: `部门`, visible: true },
-        { key: 4, label: `用户余额`, visible: true },
-        { key: 5, label: `余额过期时间`, visible: true },
-        { key: 6, label: `总的充值金额`, visible: true },
-        { key: 7, label: `总的消费金额`, visible: true },
-        { key: 8, label: `消费次数`, visible: true },
-        { key: 9, label: `最后消费时间`, visible: true },
-        { key: 10, label: `状态`, visible: true },
-        { key: 11, label: `创建时间`, visible: true }
+        { key: 4, label: `状态`, visible: true },
+        { key: 5, label: `创建时间`, visible: true }
       ],
       // 表单校验
       rules: {

@@ -1,61 +1,45 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="关联用户ID" prop="userId">
+      <el-form-item label="用户ID" prop="userId">
         <el-input
           v-model="queryParams.userId"
-          placeholder="请输入关联用户ID"
+          placeholder="请输入用户ID"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="用户余额" prop="balance">
+      <el-form-item label="套餐ID" prop="packageId">
         <el-input
-          v-model="queryParams.balance"
-          placeholder="请输入用户余额"
+          v-model="queryParams.packageId"
+          placeholder="请输入套餐ID"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="余额过期时间" prop="expiredTime">
+      <el-form-item label="套餐剩余消费次数" prop="remainingCount">
+        <el-input
+          v-model="queryParams.remainingCount"
+          placeholder="请输入套餐剩余消费次数"
+          clearable
+          @keyup.enter.native="handleQuery"
+        />
+      </el-form-item>
+      <el-form-item label="套餐到期时间" prop="expireTime">
         <el-date-picker clearable
-          v-model="queryParams.expiredTime"
+          v-model="queryParams.expireTime"
           type="date"
           value-format="yyyy-MM-dd"
-          placeholder="请选择余额过期时间">
+          placeholder="请选择套餐到期时间">
         </el-date-picker>
       </el-form-item>
-      <el-form-item label="总的充值金额" prop="totalRecharge">
+      <el-form-item label="是否过期" prop="isExpire">
         <el-input
-          v-model="queryParams.totalRecharge"
-          placeholder="请输入总的充值金额"
+          v-model="queryParams.isExpire"
+          placeholder="请输入是否过期"
           clearable
           @keyup.enter.native="handleQuery"
         />
-      </el-form-item>
-      <el-form-item label="总的消费金额" prop="totalConsume">
-        <el-input
-          v-model="queryParams.totalConsume"
-          placeholder="请输入总的消费金额"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="消费次数" prop="consumptionTimes">
-        <el-input
-          v-model="queryParams.consumptionTimes"
-          placeholder="请输入消费次数"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="最后一次消费时间" prop="lastConsumptionTime">
-        <el-date-picker clearable
-          v-model="queryParams.lastConsumptionTime"
-          type="date"
-          value-format="yyyy-MM-dd"
-          placeholder="请选择最后一次消费时间">
-        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -71,7 +55,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:balance:add']"
+          v-hasPermi="['system:userPackage:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -82,7 +66,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:balance:edit']"
+          v-hasPermi="['system:userPackage:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -93,7 +77,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:balance:remove']"
+          v-hasPermi="['system:userPackage:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -103,30 +87,24 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:balance:export']"
+          v-hasPermi="['system:userPackage:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="balanceList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="userPackageList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="主键" align="center" prop="id" />
-      <el-table-column label="关联用户ID" align="center" prop="userId" />
-      <el-table-column label="用户余额" align="center" prop="balance" />
-      <el-table-column label="余额过期时间" align="center" prop="expiredTime" width="180">
+      <el-table-column label="关联表ID" align="center" prop="id" />
+      <el-table-column label="用户ID" align="center" prop="userId" />
+      <el-table-column label="套餐ID" align="center" prop="packageId" />
+      <el-table-column label="套餐剩余消费次数" align="center" prop="remainingCount" />
+      <el-table-column label="套餐到期时间" align="center" prop="expireTime" width="180">
         <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.expiredTime, '{y}-{m}-{d}') }}</span>
+          <span>{{ parseTime(scope.row.expireTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="总的充值金额" align="center" prop="totalRecharge" />
-      <el-table-column label="总的消费金额" align="center" prop="totalConsume" />
-      <el-table-column label="消费次数" align="center" prop="consumptionTimes" />
-      <el-table-column label="最后一次消费时间" align="center" prop="lastConsumptionTime" width="180">
-        <template slot-scope="scope">
-          <span>{{ parseTime(scope.row.lastConsumptionTime, '{y}-{m}-{d}') }}</span>
-        </template>
-      </el-table-column>
+      <el-table-column label="是否过期" align="center" prop="isExpire" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -134,19 +112,19 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:balance:edit']"
+            v-hasPermi="['system:userPackage:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:balance:remove']"
+            v-hasPermi="['system:userPackage:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
     </el-table>
-
+    
     <pagination
       v-show="total>0"
       :total="total"
@@ -155,39 +133,28 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改用户余额对话框 -->
+    <!-- 添加或修改套餐和用户关联对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="关联用户ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入关联用户ID" />
+        <el-form-item label="用户ID" prop="userId">
+          <el-input v-model="form.userId" placeholder="请输入用户ID" />
         </el-form-item>
-        <el-form-item label="用户余额" prop="balance">
-          <el-input v-model="form.balance" placeholder="请输入用户余额" />
+        <el-form-item label="套餐ID" prop="packageId">
+          <el-input v-model="form.packageId" placeholder="请输入套餐ID" />
         </el-form-item>
-        <el-form-item label="余额过期时间" prop="expiredTime">
+        <el-form-item label="套餐剩余消费次数" prop="remainingCount">
+          <el-input v-model="form.remainingCount" placeholder="请输入套餐剩余消费次数" />
+        </el-form-item>
+        <el-form-item label="套餐到期时间" prop="expireTime">
           <el-date-picker clearable
-            v-model="form.expiredTime"
+            v-model="form.expireTime"
             type="date"
             value-format="yyyy-MM-dd"
-            placeholder="请选择余额过期时间">
+            placeholder="请选择套餐到期时间">
           </el-date-picker>
         </el-form-item>
-        <el-form-item label="总的充值金额" prop="totalRecharge">
-          <el-input v-model="form.totalRecharge" placeholder="请输入总的充值金额" />
-        </el-form-item>
-        <el-form-item label="总的消费金额" prop="totalConsume">
-          <el-input v-model="form.totalConsume" placeholder="请输入总的消费金额" />
-        </el-form-item>
-        <el-form-item label="消费次数" prop="consumptionTimes">
-          <el-input v-model="form.consumptionTimes" placeholder="请输入消费次数" />
-        </el-form-item>
-        <el-form-item label="最后一次消费时间" prop="lastConsumptionTime">
-          <el-date-picker clearable
-            v-model="form.lastConsumptionTime"
-            type="date"
-            value-format="yyyy-MM-dd"
-            placeholder="请选择最后一次消费时间">
-          </el-date-picker>
+        <el-form-item label="是否过期" prop="isExpire">
+          <el-input v-model="form.isExpire" placeholder="请输入是否过期" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -199,10 +166,10 @@
 </template>
 
 <script>
-import { listBalance, getBalance, delBalance, addBalance, updateBalance } from "@/api/system/balance";
+import { listUserPackage, getUserPackage, delUserPackage, addUserPackage, updateUserPackage } from "@/api/system/userPackage";
 
 export default {
-  name: "Balance",
+  name: "UserPackage",
   data() {
     return {
       // 遮罩层
@@ -217,8 +184,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 用户余额表格数据
-      balanceList: [],
+      // 套餐和用户关联表格数据
+      userPackageList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -228,31 +195,26 @@ export default {
         pageNum: 1,
         pageSize: 10,
         userId: null,
-        balance: null,
-        expiredTime: null,
-        totalRecharge: null,
-        totalConsume: null,
-        consumptionTimes: null,
-        lastConsumptionTime: null
+        packageId: null,
+        remainingCount: null,
+        expireTime: null,
+        isExpire: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
         userId: [
-          { required: true, message: "关联用户ID不能为空", trigger: "blur" }
+          { required: true, message: "用户ID不能为空", trigger: "blur" }
         ],
-        balance: [
-          { required: true, message: "用户余额不能为空", trigger: "blur" }
+        packageId: [
+          { required: true, message: "套餐ID不能为空", trigger: "blur" }
         ],
-        totalRecharge: [
-          { required: true, message: "总的充值金额不能为空", trigger: "blur" }
+        remainingCount: [
+          { required: true, message: "套餐剩余消费次数不能为空", trigger: "blur" }
         ],
-        totalConsume: [
-          { required: true, message: "总的消费金额不能为空", trigger: "blur" }
-        ],
-        consumptionTimes: [
-          { required: true, message: "消费次数不能为空", trigger: "blur" }
+        expireTime: [
+          { required: true, message: "套餐到期时间不能为空", trigger: "blur" }
         ],
       }
     };
@@ -261,17 +223,11 @@ export default {
     this.getList();
   },
   methods: {
-    open() {
-      this.open = true
-    },
-    close() {
-      this.open = false
-    },
-    /** 查询用户余额列表 */
+    /** 查询套餐和用户关联列表 */
     getList() {
       this.loading = true;
-      listBalance(this.queryParams).then(response => {
-        this.balanceList = response.rows;
+      listUserPackage(this.queryParams).then(response => {
+        this.userPackageList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -286,12 +242,10 @@ export default {
       this.form = {
         id: null,
         userId: null,
-        balance: null,
-        expiredTime: null,
-        totalRecharge: null,
-        totalConsume: null,
-        consumptionTimes: null,
-        lastConsumptionTime: null
+        packageId: null,
+        remainingCount: null,
+        expireTime: null,
+        isExpire: null
       };
       this.resetForm("form");
     },
@@ -315,16 +269,16 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加用户余额";
+      this.title = "添加套餐和用户关联";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getBalance(id).then(response => {
+      getUserPackage(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改用户余额";
+        this.title = "修改套餐和用户关联";
       });
     },
     /** 提交按钮 */
@@ -332,13 +286,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateBalance(this.form).then(response => {
+            updateUserPackage(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addBalance(this.form).then(response => {
+            addUserPackage(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -350,8 +304,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除用户余额编号为"' + ids + '"的数据项？').then(function() {
-        return delBalance(ids);
+      this.$modal.confirm('是否确认删除套餐和用户关联编号为"' + ids + '"的数据项？').then(function() {
+        return delUserPackage(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -359,9 +313,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/balance/export', {
+      this.download('system/userPackage/export', {
         ...this.queryParams
-      }, `balance_${new Date().getTime()}.xlsx`)
+      }, `userPackage_${new Date().getTime()}.xlsx`)
     }
   }
 };

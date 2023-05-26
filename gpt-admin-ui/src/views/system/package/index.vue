@@ -1,42 +1,42 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="用户ID" prop="userId">
+      <el-form-item label="套餐名称" prop="name">
         <el-input
-          v-model="queryParams.userId"
-          placeholder="请输入用户ID"
+          v-model="queryParams.name"
+          placeholder="请输入套餐名称"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="套餐ID" prop="packageId">
+      <el-form-item label="套餐限制使用次数" prop="limitCount">
         <el-input
-          v-model="queryParams.packageId"
-          placeholder="请输入套餐ID"
+          v-model="queryParams.limitCount"
+          placeholder="请输入套餐限制使用次数"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="订单金额" prop="amount">
+      <el-form-item label="套餐金额" prop="amount">
         <el-input
           v-model="queryParams.amount"
-          placeholder="请输入订单金额"
+          placeholder="请输入套餐金额"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="订单号" prop="orderCode">
+      <el-form-item label="套餐有效期" prop="validTime">
         <el-input
-          v-model="queryParams.orderCode"
-          placeholder="请输入订单号"
+          v-model="queryParams.validTime"
+          placeholder="请输入套餐有效期"
           clearable
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="商品标题" prop="goodsTitle">
+      <el-form-item label="套餐描述" prop="description">
         <el-input
-          v-model="queryParams.goodsTitle"
-          placeholder="请输入商品标题"
+          v-model="queryParams.description"
+          placeholder="请输入套餐描述"
           clearable
           @keyup.enter.native="handleQuery"
         />
@@ -55,7 +55,7 @@
           icon="el-icon-plus"
           size="mini"
           @click="handleAdd"
-          v-hasPermi="['system:order:add']"
+          v-hasPermi="['system:package:add']"
         >新增</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -66,7 +66,7 @@
           size="mini"
           :disabled="single"
           @click="handleUpdate"
-          v-hasPermi="['system:order:edit']"
+          v-hasPermi="['system:package:edit']"
         >修改</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -77,7 +77,7 @@
           size="mini"
           :disabled="multiple"
           @click="handleDelete"
-          v-hasPermi="['system:order:remove']"
+          v-hasPermi="['system:package:remove']"
         >删除</el-button>
       </el-col>
       <el-col :span="1.5">
@@ -87,21 +87,20 @@
           icon="el-icon-download"
           size="mini"
           @click="handleExport"
-          v-hasPermi="['system:order:export']"
+          v-hasPermi="['system:package:export']"
         >导出</el-button>
       </el-col>
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="orderList" @selection-change="handleSelectionChange">
+    <el-table v-loading="loading" :data="packageList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="订单ID" align="center" prop="id" />
-      <el-table-column label="用户ID" align="center" prop="userId" />
-      <el-table-column label="套餐ID" align="center" prop="packageId" />
-      <el-table-column label="订单金额" align="center" prop="amount" />
-      <el-table-column label="订单号" align="center" prop="orderCode" />
-      <el-table-column label="支付状态 0未支付 1已支付" align="center" prop="payStatus" />
-      <el-table-column label="商品标题" align="center" prop="goodsTitle" />
+      <el-table-column label="套餐ID" align="center" prop="id" />
+      <el-table-column label="套餐名称" align="center" prop="name" />
+      <el-table-column label="套餐限制使用次数" align="center" prop="limitCount" />
+      <el-table-column label="套餐金额" align="center" prop="amount" />
+      <el-table-column label="套餐有效期" align="center" prop="validTime" />
+      <el-table-column label="套餐描述" align="center" prop="description" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -109,14 +108,14 @@
             type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:order:edit']"
+            v-hasPermi="['system:package:edit']"
           >修改</el-button>
           <el-button
             size="mini"
             type="text"
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
-            v-hasPermi="['system:order:remove']"
+            v-hasPermi="['system:package:remove']"
           >删除</el-button>
         </template>
       </el-table-column>
@@ -130,23 +129,23 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改订单对话框 -->
+    <!-- 添加或修改套餐对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="用户ID" prop="userId">
-          <el-input v-model="form.userId" placeholder="请输入用户ID" />
+        <el-form-item label="套餐名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入套餐名称" />
         </el-form-item>
-        <el-form-item label="套餐ID" prop="packageId">
-          <el-input v-model="form.packageId" placeholder="请输入套餐ID" />
+        <el-form-item label="套餐限制使用次数" prop="limitCount">
+          <el-input v-model="form.limitCount" placeholder="请输入套餐限制使用次数" />
         </el-form-item>
-        <el-form-item label="订单金额" prop="amount">
-          <el-input v-model="form.amount" placeholder="请输入订单金额" />
+        <el-form-item label="套餐金额" prop="amount">
+          <el-input v-model="form.amount" placeholder="请输入套餐金额" />
         </el-form-item>
-        <el-form-item label="订单号" prop="orderCode">
-          <el-input v-model="form.orderCode" placeholder="请输入订单号" />
+        <el-form-item label="套餐有效期" prop="validTime">
+          <el-input v-model="form.validTime" placeholder="请输入套餐有效期" />
         </el-form-item>
-        <el-form-item label="商品标题" prop="goodsTitle">
-          <el-input v-model="form.goodsTitle" placeholder="请输入商品标题" />
+        <el-form-item label="套餐描述" prop="description">
+          <el-input v-model="form.description" placeholder="请输入套餐描述" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -158,10 +157,10 @@
 </template>
 
 <script>
-import { listOrder, getOrder, delOrder, addOrder, updateOrder } from "@/api/system/order";
+import { listPackage, getPackage, delPackage, addPackage, updatePackage } from "@/api/system/package";
 
 export default {
-  name: "Order",
+  name: "Package",
   data() {
     return {
       // 遮罩层
@@ -176,8 +175,8 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 订单表格数据
-      orderList: [],
+      // 套餐表格数据
+      packageList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -186,29 +185,34 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        userId: null,
-        packageId: null,
+        name: null,
+        limitCount: null,
         amount: null,
-        orderCode: null,
-        payStatus: null,
-        goodsTitle: null
+        validTime: null,
+        description: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
-        userId: [
-          { required: true, message: "用户ID不能为空", trigger: "blur" }
+        name: [
+          { required: true, message: "套餐名称不能为空", trigger: "blur" }
         ],
-        packageId: [
-          { required: true, message: "套餐ID不能为空", trigger: "blur" }
+        limitCount: [
+          { required: true, message: "套餐限制使用次数不能为空", trigger: "blur" }
         ],
         createTime: [
-          { required: true, message: "订单创建时间不能为空", trigger: "blur" }
+          { required: true, message: "套餐创建时间不能为空", trigger: "blur" }
         ],
         amount: [
-          { required: true, message: "订单金额不能为空", trigger: "blur" }
+          { required: true, message: "套餐金额不能为空", trigger: "blur" }
         ],
+        validTime: [
+          { required: true, message: "套餐有效期不能为空", trigger: "blur" }
+        ],
+        description: [
+          { required: true, message: "套餐描述不能为空", trigger: "blur" }
+        ]
       }
     };
   },
@@ -216,11 +220,11 @@ export default {
     this.getList();
   },
   methods: {
-    /** 查询订单列表 */
+    /** 查询套餐列表 */
     getList() {
       this.loading = true;
-      listOrder(this.queryParams).then(response => {
-        this.orderList = response.rows;
+      listPackage(this.queryParams).then(response => {
+        this.packageList = response.rows;
         this.total = response.total;
         this.loading = false;
       });
@@ -234,13 +238,12 @@ export default {
     reset() {
       this.form = {
         id: null,
-        userId: null,
-        packageId: null,
+        name: null,
+        limitCount: null,
         createTime: null,
         amount: null,
-        orderCode: null,
-        payStatus: null,
-        goodsTitle: null
+        validTime: null,
+        description: null
       };
       this.resetForm("form");
     },
@@ -264,16 +267,16 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加订单";
+      this.title = "添加套餐";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const id = row.id || this.ids
-      getOrder(id).then(response => {
+      getPackage(id).then(response => {
         this.form = response.data;
         this.open = true;
-        this.title = "修改订单";
+        this.title = "修改套餐";
       });
     },
     /** 提交按钮 */
@@ -281,13 +284,13 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           if (this.form.id != null) {
-            updateOrder(this.form).then(response => {
+            updatePackage(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addOrder(this.form).then(response => {
+            addPackage(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -299,8 +302,8 @@ export default {
     /** 删除按钮操作 */
     handleDelete(row) {
       const ids = row.id || this.ids;
-      this.$modal.confirm('是否确认删除订单编号为"' + ids + '"的数据项？').then(function() {
-        return delOrder(ids);
+      this.$modal.confirm('是否确认删除套餐编号为"' + ids + '"的数据项？').then(function() {
+        return delPackage(ids);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");
@@ -308,9 +311,9 @@ export default {
     },
     /** 导出按钮操作 */
     handleExport() {
-      this.download('system/order/export', {
+      this.download('system/package/export', {
         ...this.queryParams
-      }, `order_${new Date().getTime()}.xlsx`)
+      }, `package_${new Date().getTime()}.xlsx`)
     }
   }
 };

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.GptOrderMapper">
+
+    <resultMap type="GptOrder" id="GptOrderResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="packageId"    column="package_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="amount"    column="amount"    />
+        <result property="orderCode"    column="order_code"    />
+        <result property="payStatus"    column="pay_status"    />
+        <result property="goodsTitle"    column="goods_title"    />
+    </resultMap>
+
+    <sql id="selectGptOrderVo">
+        select id, user_id, package_id, create_time, amount, order_code, pay_status, goods_title from gpt_order
+    </sql>
+
+    <select id="selectGptOrderList" parameterType="GptOrder" resultMap="GptOrderResult">
+        <include refid="selectGptOrderVo"/>
+        <where>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="packageId != null "> and package_id = #{packageId}</if>
+            <if test="amount != null "> and amount = #{amount}</if>
+            <if test="orderCode != null  and orderCode != ''"> and order_code = #{orderCode}</if>
+            <if test="payStatus != null  and payStatus != ''"> and pay_status = #{payStatus}</if>
+            <if test="goodsTitle != null  and goodsTitle != ''"> and goods_title = #{goodsTitle}</if>
+        </where>
+    </select>
+
+    <select id="selectGptOrderById" parameterType="Long" resultMap="GptOrderResult">
+        <include refid="selectGptOrderVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectGptOrderByOrderCode" parameterType="Long" resultMap="GptOrderResult">
+        <include refid="selectGptOrderVo"/>
+        where order_code = #{orderCode}
+    </select>
+
+    <insert id="insertGptOrder" parameterType="GptOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into gpt_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="packageId != null">package_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="amount != null">amount,</if>
+            <if test="orderCode != null">order_code,</if>
+            <if test="payStatus != null">pay_status,</if>
+            <if test="goodsTitle != null">goods_title,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="packageId != null">#{packageId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="amount != null">#{amount},</if>
+            <if test="orderCode != null">#{orderCode},</if>
+            <if test="payStatus != null">#{payStatus},</if>
+            <if test="goodsTitle != null">#{goodsTitle},</if>
+         </trim>
+    </insert>
+
+    <update id="updateGptOrder" parameterType="GptOrder">
+        update gpt_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="packageId != null">package_id = #{packageId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="amount != null">amount = #{amount},</if>
+            <if test="orderCode != null">order_code = #{orderCode},</if>
+            <if test="payStatus != null">pay_status = #{payStatus},</if>
+            <if test="goodsTitle != null">goods_title = #{goodsTitle},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteGptOrderById" parameterType="Long">
+        delete from gpt_order where id = #{id}
+    </delete>
+
+    <delete id="deleteGptOrderByIds" parameterType="String">
+        delete from gpt_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

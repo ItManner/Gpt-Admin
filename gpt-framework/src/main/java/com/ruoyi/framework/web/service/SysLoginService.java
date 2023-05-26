@@ -4,7 +4,6 @@ import javax.annotation.Resource;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.common.core.domain.entity.SysUserBalance;
-import com.ruoyi.system.service.ISysUserBalanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -56,8 +55,6 @@ public class SysLoginService
 
     @Autowired
     private ISysConfigService configService;
-    @Autowired
-    private ISysUserBalanceService iSysUserBalanceService;
 
     /**
      * 登录验证
@@ -68,7 +65,7 @@ public class SysLoginService
      * @param uuid 唯一标识
      * @return 结果
      */
-    public JSONObject login(String username, String password, String code, String uuid)
+    public String login(String username, String password, String code, String uuid)
     {
         // 验证码校验
         validateCaptcha(username, code, uuid);
@@ -104,20 +101,7 @@ public class SysLoginService
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         recordLoginInfo(loginUser.getUserId());
         // 生成token
-        String token = tokenService.createToken(loginUser);
-        JSONObject result = new JSONObject();
-        result.put("token",token);
-        JSONObject userInfo = new JSONObject();
-        userInfo.put("id", loginUser.getUserId());
-        userInfo.put("account", loginUser.getUser().getUserName());
-        userInfo.put("nickname", loginUser.getUser().getNickName());
-        userInfo.put("avatar", loginUser.getUser().getAvatar());
-        userInfo.put("role", ObjectUtils.isEmpty(loginUser.getUser().getRoles()) ? "user":loginUser.getUser().getRoles().get(0).getRoleKey());
-        userInfo.put("status", loginUser.getUser().getStatus());
-        SysUserBalance balance = iSysUserBalanceService.selectSysUserBalanceByUserId(loginUser.getUserId());
-        userInfo.put("integral", balance.getBalance());
-        result.put("user_info",userInfo);
-        return result;
+        return tokenService.createToken(loginUser);
     }
 
     /**

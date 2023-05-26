@@ -13,8 +13,12 @@ import com.jeequan.jeepay.util.JeepayKit;
 import com.ruoyi.common.qrcode.QRBtf;
 import com.ruoyi.common.qrcode.renderer.Renderer;
 import com.ruoyi.common.utils.SecurityUtils;
-import com.ruoyi.system.domain.GptBalanceOrder;
-import com.ruoyi.system.mapper.GptBalanceOrderMapper;
+import com.ruoyi.system.domain.GptOrder;
+import com.ruoyi.system.domain.GptPackage;
+import com.ruoyi.system.domain.GptUserPackage;
+import com.ruoyi.system.mapper.GptOrderMapper;
+import com.ruoyi.system.mapper.GptPackageMapper;
+import com.ruoyi.system.mapper.GptUserPackageMapper;
 import com.ruoyi.system.service.JeePayService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 
 /**
@@ -46,22 +52,21 @@ public class JeePayServiceImpl implements JeePayService {
     private Environment config;
 
     @Autowired
-    private GptBalanceOrderMapper gptBalanceOrderMapper;
+    private GptOrderMapper gptOrderMapper;
+
+    @Autowired
+    private GptUserPackageMapper gptUserPackageMapper;
+
+    @Autowired
+    private GptPackageMapper gptPackageMapper;
 
     private final static HashMap<EncodeHintType, Object> encodeHint = new HashMap<>();
 
 
     @Override
     @Transactional
-    public String scanPay(GptBalanceOrder orderInfoDto) {
-        //自动创建一条订单
-        orderInfoDto.setOrderCode("Gpt" + "_" + UUID.randomUUID());
-        orderInfoDto.setRechargeTime(new Date());
-        orderInfoDto.setUserId(SecurityUtils.getUserId());
-        orderInfoDto.setCreateBy(SecurityUtils.getUsername());
-        orderInfoDto.setCreateTime(new Date());
-        orderInfoDto.setRechargeStatus(0);
-        if (gptBalanceOrderMapper.insertGptBalanceOrder(orderInfoDto) == 0) return "创建订单失败";
+    public String scanPay(String orderId) {
+        GptOrder gptOrder = gptOrderMapper.selectGptOrderById(Long.valueOf(orderId));
         // 构建请求数据
         PayOrderCreateRequest request = new PayOrderCreateRequest();
         PayOrderCreateReqModel model = new PayOrderCreateReqModel();
@@ -70,18 +75,18 @@ public class JeePayServiceImpl implements JeePayService {
         // 应用ID
         model.setAppId(Jeepay.appId);
         // 商户订单号
-        model.setMchOrderNo(orderInfoDto.getOrderCode());
+        model.setMchOrderNo(gptOrder.getOrderCode());
         // 支付方式
         model.setWayCode("QR_CASHIER");
         // 金额，单位分
-        long amount = orderInfoDto.getRechargeAmount().multiply(new BigDecimal(100)).longValue();
+        long amount = gptOrder.getAmount().multiply(new BigDecimal(100)).longValue();
         model.setAmount(amount);
         // 币种，目前只支持cny
         model.setCurrency("CNY");
         // 发起支付请求客户端的IP地址
         model.setClientIp(config.getProperty("ip-address"));
         // 商品标题
-        model.setSubject(orderInfoDto.getGoodsTitle());
+        model.setSubject(gptOrder.getGoodsTitle());
         // 商品描述
         model.setBody("人工智能");
         // 异步通知地址
@@ -102,7 +107,7 @@ public class JeePayServiceImpl implements JeePayService {
                 PayOrderCreateResModel payOrderCreateResModel = response.get();
                 result = handleQrcode(payOrderCreateResModel.getPayData());
             } else {
-                log.warn("下单失败：{}", orderInfoDto.getOrderCode());
+                log.warn("下单失败：{}", gptOrder.getOrderCode());
             }
         } catch (JeepayException e) {
             log.error(e.getMessage());
@@ -110,7 +115,9 @@ public class JeePayServiceImpl implements JeePayService {
         return result;
     }
 
+
     @Override
+    @Transactional
     public String tradeNotify(HttpServletRequest req) {
         String result = "failure";
         try {
@@ -121,12 +128,23 @@ public class JeePayServiceImpl implements JeePayService {
             if (chackSgin(map, apikey)) {
                 return result;
             }
-            //支付成功 修改订单为已处理
-            GptBalanceOrder gptBalanceOrder = new GptBalanceOrder();
-            gptBalanceOrder.setOrderCode(map.get("mchOrderNo").toString());
-            gptBalanceOrder.setRechargeStatus(1);
-            if (gptBalanceOrderMapper.updateGptBalanceOrderByOrderCode(gptBalanceOrder) > 0) {
+            //支付成功 修改订单为已支付
+            GptOrder gptOrder = gptOrderMapper.selectGptOrderByOrderCode(map.get("mchOrderNo").toString());
+            gptOrder.setPayStatus("1");
+            if (gptOrderMapper.updateGptOrder(gptOrder) > 0) {
                 //返回成功
+                GptPackage gptPackage = gptPackageMapper.selectGptPackageById(gptOrder.getPackageId());
+                GptUserPackage gptUserPackage = new GptUserPackage();
+                gptUserPackage.setPackageId(gptPackage.getId());
+                //获取当天日期
+                LocalDate today = LocalDate.now();
+                //获取套餐对应的天数日期
+                LocalDate afterFiveDays = today.plusDays(gptPackage.getValidTime());
+                gptUserPackage.setExpireTime(Date.from(afterFiveDays.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                gptUserPackage.setUserId(SecurityUtils.getLoginUser().getUserId());
+                gptUserPackage.setRemainingCount(gptPackage.getLimitCount());
+                gptUserPackage.setIsExpire("1");
+                if (gptUserPackageMapper.insertGptUserPackage(gptUserPackage) == 0) return result;;
                 result = "success";
             }
         } catch (Exception e) {
@@ -158,7 +176,7 @@ public class JeePayServiceImpl implements JeePayService {
         log.info("支付成功,异步通知验签成功!");
         //TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验
         //1.验证mchOrderNo 是否为商家系统中创建的订单号
-        GptBalanceOrder orderInfos = gptBalanceOrderMapper.selectByOutTradeNo(map.get("mchOrderNo").toString());
+        GptOrder orderInfos = gptOrderMapper.selectGptOrderByOrderCode(map.get("mchOrderNo").toString());
         log.info("支付成功回调,查询订单,[{}]", JSON.toJSONString(orderInfos));
         if (ObjectUtils.isEmpty(orderInfos)) {
             log.error("支付成功,回调通知,mchOrderNo不是本系统生成的订单号!!");
@@ -167,7 +185,7 @@ public class JeePayServiceImpl implements JeePayService {
 
         //2.判断 amountt 是否确实为该订单的实际金额
         //订单金额单位转换为分
-        BigDecimal reduce = orderInfos.getRechargeAmount().multiply(new BigDecimal(100));
+        BigDecimal reduce = orderInfos.getAmount().multiply(new BigDecimal(100));
         BigDecimal amount = new BigDecimal(map.get("amount").toString());
         if (reduce.compareTo(amount) != 0) {
             log.error("支付成功,回调通知,订单金额与实际金额不符!!");
@@ -190,23 +208,23 @@ public class JeePayServiceImpl implements JeePayService {
     }
 
 
-    public String handleQrcode(String url)  {
+    public String handleQrcode(String url) {
         try {
-        Renderer renderer = Renderer.line().adjust()
-                .end();
+            Renderer renderer = Renderer.line().adjust()
+                    .end();
 
-        QRBtf qrBtf = new QRBtf(renderer);
-        BufferedImage image = qrBtf.encode(url, encodeHint);
+            QRBtf qrBtf = new QRBtf(renderer);
+            BufferedImage image = qrBtf.encode(url, encodeHint);
 
-        // 将BufferedImage对象转换成ByteArrayOutputStream对象
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", baos);
+            // 将BufferedImage对象转换成ByteArrayOutputStream对象
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(image, "png", baos);
 
-        // 将ByteArrayOutputStream对象转换成字节数组
-        byte[] imageBytes = baos.toByteArray();
+            // 将ByteArrayOutputStream对象转换成字节数组
+            byte[] imageBytes = baos.toByteArray();
 
-        // 使用Base64类将字节数组转换成base64字符串
-        return Base64.getEncoder().encodeToString(imageBytes);
+            // 使用Base64类将字节数组转换成base64字符串
+            return Base64.getEncoder().encodeToString(imageBytes);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
