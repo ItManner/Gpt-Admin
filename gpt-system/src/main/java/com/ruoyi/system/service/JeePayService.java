@@ -17,7 +17,7 @@ public interface JeePayService {
      * @return
      * @throws JeepayException
      */
-    String scanPay(String orderId) throws JeepayException;
+    String scanPay(GptOrder gptOrder) throws JeepayException;
 
     String tradeNotify(HttpServletRequest req);
 }

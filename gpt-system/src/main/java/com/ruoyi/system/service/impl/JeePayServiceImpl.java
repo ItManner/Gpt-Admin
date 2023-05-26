@@ -65,8 +65,7 @@ public class JeePayServiceImpl implements JeePayService {
 
     @Override
     @Transactional
-    public String scanPay(String orderId) {
-        GptOrder gptOrder = gptOrderMapper.selectGptOrderById(Long.valueOf(orderId));
+    public String scanPay(GptOrder gptOrder) {
         // 构建请求数据
         PayOrderCreateRequest request = new PayOrderCreateRequest();
         PayOrderCreateReqModel model = new PayOrderCreateReqModel();
@@ -167,12 +166,10 @@ public class JeePayServiceImpl implements JeePayService {
         Object sign = map.remove("sign");
         String reSign = JeepayKit.getSign(map, apikey);
         log.info("调用SDK加签,返回参数:[{}]", reSign);
-
         if (!Objects.equals(reSign, sign)) {
             log.error("支付成功,异步通知验签失败!");
             return true;
         }
-
         log.info("支付成功,异步通知验签成功!");
         //TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验
         //1.验证mchOrderNo 是否为商家系统中创建的订单号
@@ -182,7 +179,6 @@ public class JeePayServiceImpl implements JeePayService {
             log.error("支付成功,回调通知,mchOrderNo不是本系统生成的订单号!!");
             return true;
         }
-
         //2.判断 amountt 是否确实为该订单的实际金额
         //订单金额单位转换为分
         BigDecimal reduce = orderInfos.getAmount().multiply(new BigDecimal(100));
