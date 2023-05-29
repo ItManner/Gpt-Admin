@@ -17,6 +17,7 @@ ruoyi:
 discord:
   bot:
     token: MTEwOTQwMTc2MDAyNTU0NjgxMw.GdRwg1.nSRKgvDiv23LkV5ScRM0N9fM7Teol8FW7yl6Zc
+    apiUrl: https://midjourney.nbclass.me
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
