@@ -1,5 +1,8 @@
 package com.ruoyi.web.controller.system;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +33,7 @@ import com.ruoyi.system.service.ISysUserService;
  */
 @RestController
 @RequestMapping("/system/user/profile")
+@Api(tags = "用户基础功能")
 public class SysProfileController extends BaseController
 {
     @Autowired
@@ -91,7 +95,8 @@ public class SysProfileController extends BaseController
      */
     @Log(title = "个人信息", businessType = BusinessType.UPDATE)
     @PutMapping("/updatePwd")
-    public AjaxResult updatePwd(String oldPassword, String newPassword)
+    @ApiOperation("修改密码")
+    public AjaxResult updatePwd(@ApiParam("旧密码") String oldPassword, @ApiParam("新密码") String newPassword)
     {
         LoginUser loginUser = getLoginUser();
         String userName = loginUser.getUsername();

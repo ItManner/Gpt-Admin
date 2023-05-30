@@ -11,6 +11,7 @@ import com.ruoyi.common.enums.TaskStatus;
 import com.ruoyi.common.utils.ConvertUtils;
 import com.ruoyi.web.service.DiscordService;
 import com.ruoyi.web.service.TranslateService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
+
 
 @RestController
 @RequestMapping("/gpt")
@@ -39,7 +41,7 @@ public class GptCreateImage {
      * @param submitDTO 包含提交的信息及动作的GptImageDto对象
      * @return 消息对象，表示任务提交的结果
      */
-    @ApiOperation(value = "提交Imagine或UV任务")
+
     @PostMapping("/submit")
     public Message<String> submit(@RequestBody GptImageDto submitDTO) {
         // 验证提交的信息是否完整，如果不完整则返回验证错误的消息
@@ -144,7 +146,6 @@ public class GptCreateImage {
         return Message.success(task.getId());
     }
 
-    @ApiOperation(value = "列出指定id任务信息")
     @GetMapping("/{id}/fetch")
     public Task getTask(@ApiParam(value = "任务id") @PathVariable String id) {
         return JSONObject.parseObject( redisTemplate.opsForValue().get(getRedisKey(id)), Task.class);

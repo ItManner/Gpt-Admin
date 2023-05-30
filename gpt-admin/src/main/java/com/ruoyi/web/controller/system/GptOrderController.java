@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.system.domain.GptPackage;
 import com.ruoyi.system.mapper.GptPackageMapper;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
@@ -36,6 +39,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/system/order")
+@Api(tags = "订单功能")
 public class GptOrderController extends BaseController
 {
     @Autowired
@@ -52,6 +56,15 @@ public class GptOrderController extends BaseController
     {
         startPage();
         List<GptOrder> list = gptOrderService.selectGptOrderList(gptOrder);
+        return getDataTable(list);
+    }
+
+    @GetMapping("/myOrderList")
+    @ApiOperation("查询我的订单列表")
+    public TableDataInfo myOrderList()
+    {
+        startPage();
+        List<GptOrder> list = gptOrderService.selectGptOrderListByUserId(SecurityUtils.getUserId());
         return getDataTable(list);
     }
 
@@ -73,7 +86,8 @@ public class GptOrderController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:order:query')")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
+    @ApiOperation("查询订单详情")
+    public AjaxResult getInfo(@PathVariable("id") @ApiParam("订单ID") Long id)
     {
         return success(gptOrderService.selectGptOrderById(id));
     }

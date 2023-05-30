@@ -3,7 +3,7 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.GptUserPackageMapper">
-    
+
     <resultMap type="GptUserPackage" id="GptUserPackageResult">
         <result property="id"    column="id"    />
         <result property="userId"    column="user_id"    />
@@ -19,7 +19,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectGptUserPackageList" parameterType="GptUserPackage" resultMap="GptUserPackageResult">
         <include refid="selectGptUserPackageVo"/>
-        <where>  
+        <where>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="packageId != null "> and package_id = #{packageId}</if>
             <if test="remainingCount != null "> and remaining_count = #{remainingCount}</if>
@@ -27,12 +27,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="isExpire != null  and isExpire != ''"> and is_expire = #{isExpire}</if>
         </where>
     </select>
-    
+
     <select id="selectGptUserPackageById" parameterType="Long" resultMap="GptUserPackageResult">
         <include refid="selectGptUserPackageVo"/>
         where id = #{id}
     </select>
-        
+    <select id="selectGptUserPackageListByUserId" resultType="com.ruoyi.system.domain.GptUserPackage">
+        select  * from gpt_user_package where user_id = #{userId} and is_expire = 1
+    </select>
+
+    <select id="selectGptUserPackageAllByUserId" resultType="com.ruoyi.system.domain.GptUserPackage">
+        select  * from gpt_user_package where user_id = #{userId} and is_expire = 1
+    </select>
+
     <insert id="insertGptUserPackage" parameterType="GptUserPackage" useGeneratedKeys="true" keyProperty="id">
         insert into gpt_user_package
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -68,7 +75,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteGptUserPackageByIds" parameterType="String">
-        delete from gpt_user_package where id in 
+        delete from gpt_user_package where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

@@ -10,19 +10,19 @@ import com.ruoyi.system.service.IGptOrderService;
 
 /**
  * 订单Service业务层处理
- * 
+ *
  * @author ruoyi
  * @date 2023-05-26
  */
 @Service
-public class GptOrderServiceImpl implements IGptOrderService 
+public class GptOrderServiceImpl implements IGptOrderService
 {
     @Autowired
     private GptOrderMapper gptOrderMapper;
 
     /**
      * 查询订单
-     * 
+     *
      * @param id 订单主键
      * @return 订单
      */
@@ -34,7 +34,7 @@ public class GptOrderServiceImpl implements IGptOrderService
 
     /**
      * 查询订单列表
-     * 
+     *
      * @param gptOrder 订单
      * @return 订单
      */
@@ -46,7 +46,7 @@ public class GptOrderServiceImpl implements IGptOrderService
 
     /**
      * 新增订单
-     * 
+     *
      * @param gptOrder 订单
      * @return 结果
      */
@@ -59,7 +59,7 @@ public class GptOrderServiceImpl implements IGptOrderService
 
     /**
      * 修改订单
-     * 
+     *
      * @param gptOrder 订单
      * @return 结果
      */
@@ -71,7 +71,7 @@ public class GptOrderServiceImpl implements IGptOrderService
 
     /**
      * 批量删除订单
-     * 
+     *
      * @param ids 需要删除的订单主键
      * @return 结果
      */
@@ -83,7 +83,7 @@ public class GptOrderServiceImpl implements IGptOrderService
 
     /**
      * 删除订单信息
-     * 
+     *
      * @param id 订单主键
      * @return 结果
      */
@@ -91,5 +91,10 @@ public class GptOrderServiceImpl implements IGptOrderService
     public int deleteGptOrderById(Long id)
     {
         return gptOrderMapper.deleteGptOrderById(id);
+    }
+
+    @Override
+    public List<GptOrder> selectGptOrderListByUserId(Long userId) {
+        return gptOrderMapper.selectGptOrderListByUserId(userId);
     }
 }

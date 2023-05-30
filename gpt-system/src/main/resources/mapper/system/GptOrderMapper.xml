@@ -38,6 +38,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectGptOrderByOrderCode" resultType="com.ruoyi.system.domain.GptOrder" resultMap="GptOrderResult">
         select * from gpt_order where order_code = #{orderCode}
     </select>
+    <select id="selectGptOrderListByUserId" resultType="com.ruoyi.system.domain.GptOrder" resultMap="GptOrderResult">
+        select * from gpt_order where user_id = #{userId}
+    </select>
 
     <insert id="insertGptOrder" parameterType="GptOrder" useGeneratedKeys="true" keyProperty="id">
         insert into gpt_order

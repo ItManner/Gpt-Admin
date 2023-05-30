@@ -1,25 +1,22 @@
 package com.ruoyi.web.controller.system;
 
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.annotation.Log;
 import com.ruoyi.common.core.controller.BaseController;
 import com.ruoyi.common.core.domain.AjaxResult;
+import com.ruoyi.common.core.page.TableDataInfo;
 import com.ruoyi.common.enums.BusinessType;
+import com.ruoyi.common.utils.SecurityUtils;
+import com.ruoyi.common.utils.poi.ExcelUtil;
 import com.ruoyi.system.domain.GptUserPackage;
 import com.ruoyi.system.service.IGptUserPackageService;
-import com.ruoyi.common.utils.poi.ExcelUtil;
-import com.ruoyi.common.core.page.TableDataInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.List;
 
 /**
  * 套餐和用户关联Controller
@@ -29,6 +26,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
  */
 @RestController
 @RequestMapping("/system/userPackage")
+@Api(tags = "套餐功能")
 public class GptUserPackageController extends BaseController
 {
     @Autowired
@@ -44,6 +42,30 @@ public class GptUserPackageController extends BaseController
         startPage();
         List<GptUserPackage> list = gptUserPackageService.selectGptUserPackageList(gptUserPackage);
         return getDataTable(list);
+    }
+
+
+    /**
+     * 查询我的套餐列表
+     */
+    @PreAuthorize("@ss.hasPermi('system:userPackage:list')")
+    @GetMapping("/myPackageList")
+    @ApiOperation("查询我的套餐列表")
+    public TableDataInfo myPackageList()
+    {
+        startPage();
+        List<GptUserPackage> list = gptUserPackageService.selectGptUserPackageListByUserId(SecurityUtils.getUserId());
+        return getDataTable(list);
+    }
+
+    /**
+     * 查询我的套餐列表
+     */
+    @GetMapping("/myPackageNum")
+    @ApiOperation("查询我的套餐剩余次数总和")
+    public AjaxResult myPackageNum()
+    {
+        return AjaxResult.success(gptUserPackageService.myPackageNum(SecurityUtils.getUserId()));
     }
 
     /**
@@ -96,7 +118,7 @@ public class GptUserPackageController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:userPackage:remove')")
     @Log(title = "套餐和用户关联", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
+    @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(gptUserPackageService.deleteGptUserPackageByIds(ids));

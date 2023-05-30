@@ -18,6 +18,7 @@ discord:
   bot:
     token: MTEwOTQwMTc2MDAyNTU0NjgxMw.GdRwg1.nSRKgvDiv23LkV5ScRM0N9fM7Teol8FW7yl6Zc
     apiUrl: https://midjourney.nbclass.me
+    needNum: 1
 # 开发环境配置
 server:
   # 服务器的HTTP端口，默认为8080
@@ -122,7 +123,7 @@ swagger:
   # 是否开启swagger
   enabled: true
   # 请求前缀
-  pathMapping: /dev-api
+  # pathMapping: /dev-api
 
 # 防止XSS攻击
 xss:

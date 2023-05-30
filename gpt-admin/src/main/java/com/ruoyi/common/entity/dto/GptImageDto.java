@@ -1,10 +1,12 @@
 package com.ruoyi.common.entity.dto;
 
 import com.ruoyi.common.enums.Action;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
+@ApiModel(value = "Midjourney", description = "Midjourney绘画对象")
 public class GptImageDto {
 	/**
 	 * state: 自定义参数, task中保留.
@@ -34,12 +36,12 @@ public class GptImageDto {
 	/**
 	 * notifyHook of caller
 	 */
-	@ApiModelProperty("回调地址")
+	@ApiModelProperty("回调地址(可选),图片处理完成后会调用这个地址")
 	private String notifyHook;
 
 	/**
 	 * 额外的：服务器编号
 	 */
-	@ApiModelProperty("服务器编号")
+	@ApiModelProperty("服务器编号(不管)")
 	private String serverId;
 }

@@ -1,5 +1,7 @@
 package com.ruoyi.web.controller.system;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,10 +15,11 @@ import com.ruoyi.system.service.ISysConfigService;
 
 /**
  * 注册验证
- * 
+ *
  * @author ruoyi
  */
 @RestController
+@Api(tags = "用户基础功能")
 public class SysRegisterController extends BaseController
 {
     @Autowired
@@ -26,6 +29,7 @@ public class SysRegisterController extends BaseController
     private ISysConfigService configService;
 
     @PostMapping("/register")
+    @ApiOperation(value = "注册")
     public AjaxResult register(@RequestBody RegisterBody user)
     {
         if (!("true".equals(configService.selectConfigByKey("sys.account.registerUser"))))

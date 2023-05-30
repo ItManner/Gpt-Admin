@@ -6,6 +6,8 @@ import java.util.Set;
 import com.alibaba.fastjson.JSONObject;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.entity.SysUserBalance;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,6 +30,7 @@ import com.ruoyi.system.service.ISysMenuService;
  * @author ruoyi
  */
 @RestController
+@Api(tags = "用户基础功能")
 public class SysLoginController
 {
     @Autowired
@@ -47,6 +50,7 @@ public class SysLoginController
      * @return 结果
      */
     @PostMapping("/login")
+    @ApiOperation(value = "登录")
     public AjaxResult login(@RequestBody LoginBody loginBody)
     {
         AjaxResult ajax = AjaxResult.success();
@@ -63,6 +67,7 @@ public class SysLoginController
      * @return 用户信息
      */
     @GetMapping("getInfo")
+    @ApiOperation(value = "获取用户信息")
     public AjaxResult getInfo()
     {
         SysUser user = SecurityUtils.getLoginUser().getUser();

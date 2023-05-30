@@ -28,7 +28,7 @@ import java.util.Date;
  * @createDate:2022/8/5
  * @description:
  */
-@Api(tags = "计全聚合支付")
+@Api(tags = "支付功能")
 @RestController()
 public class JeePayController {
 
@@ -47,6 +47,7 @@ public class JeePayController {
      */
     @PostMapping("/scanPay")
     @Anonymous
+    @ApiOperation(value = "发起支付")
     public AjaxResult scanPay(@RequestBody Pay pay) throws JeepayException {
         //订单支付
         GptOrder gptOrder = new GptOrder();

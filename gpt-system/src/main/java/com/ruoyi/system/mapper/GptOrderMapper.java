@@ -61,4 +61,6 @@ public interface GptOrderMapper
     public int deleteGptOrderByIds(Long[] ids);
 
     GptOrder selectGptOrderByOrderCode(@Param("orderCode") String mchOrderNo);
+
+    List<GptOrder> selectGptOrderListByUserId(Long userId);
 }
