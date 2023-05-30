@@ -1,6 +1,7 @@
 package com.ruoyi.system.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.zxing.EncodeHintType;
 import com.jeequan.jeepay.Jeepay;
 import com.jeequan.jeepay.JeepayClient;
@@ -65,7 +66,7 @@ public class JeePayServiceImpl implements JeePayService {
 
     @Override
     @Transactional
-    public String scanPay(GptOrder gptOrder) {
+    public JSONObject scanPay(GptOrder gptOrder) {
         // 构建请求数据
         PayOrderCreateRequest request = new PayOrderCreateRequest();
         PayOrderCreateReqModel model = new PayOrderCreateReqModel();
@@ -99,19 +100,24 @@ public class JeePayServiceImpl implements JeePayService {
         request.setBizModel(model);
         log.info("jeepay下单参数处理完毕,参数:[{}]", JSON.toJSONString(request));
         String result = "failure";
+        JSONObject res = new JSONObject();
         try {
             PayOrderCreateResponse response = jeepayClient.execute(request);
             // 下单成功
             if (response.isSuccess(Jeepay.apiKey)) {
                 PayOrderCreateResModel payOrderCreateResModel = response.get();
-                result = handleQrcode(payOrderCreateResModel.getPayData());
+                result = "success";
+                String qrBase64Str = handleQrcode(payOrderCreateResModel.getPayData());
+                res.put("payImg", qrBase64Str);
+                res.put("payStatus", result);
             } else {
-                log.warn("下单失败：{}", gptOrder.getOrderCode());
+                log.info("下单失败：{}", gptOrder.getOrderCode());
+                res.put("payStatus", result);
             }
         } catch (JeepayException e) {
-            log.error(e.getMessage());
+            log.info(e.getMessage());
         }
-        return result;
+        return res;
     }
 
 
@@ -167,16 +173,16 @@ public class JeePayServiceImpl implements JeePayService {
         String reSign = JeepayKit.getSign(map, apikey);
         log.info("调用SDK加签,返回参数:[{}]", reSign);
         if (!Objects.equals(reSign, sign)) {
-            log.error("支付成功,异步通知验签失败!");
+            log.info("支付成功,异步通知验签失败!");
             return true;
         }
         log.info("支付成功,异步通知验签成功!");
-        //TODO 验签成功后，按照支付结果异步通知中的描述，对支付结果中的业务内容进行二次校验
         //1.验证mchOrderNo 是否为商家系统中创建的订单号
+        log.info("支付成功回调参数：{}",map);
         GptOrder orderInfos = gptOrderMapper.selectGptOrderByOrderCode(map.get("mchOrderNo").toString());
-        log.info("支付成功回调,查询订单,[{}]", JSON.toJSONString(orderInfos));
+        log.info("查询订单,[{}]", JSON.toJSONString(orderInfos));
         if (ObjectUtils.isEmpty(orderInfos)) {
-            log.error("支付成功,回调通知,mchOrderNo不是本系统生成的订单号!!");
+            log.info("支付成功,回调通知,mchOrderNo不是本系统生成的订单号!!");
             return true;
         }
         //2.判断 amountt 是否确实为该订单的实际金额
@@ -184,7 +190,7 @@ public class JeePayServiceImpl implements JeePayService {
         BigDecimal reduce = orderInfos.getAmount().multiply(new BigDecimal(100));
         BigDecimal amount = new BigDecimal(map.get("amount").toString());
         if (reduce.compareTo(amount) != 0) {
-            log.error("支付成功,回调通知,订单金额与实际金额不符!!");
+            log.info("支付成功,回调通知,订单金额与实际金额不符!!");
             return true;
         }
         return false;

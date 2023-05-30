@@ -82,7 +82,7 @@ public class GptOrderController extends BaseController
      * 新增订单
      */
     @Log(title = "订单", businessType = BusinessType.INSERT)
-    @PostMapping
+    @PostMapping("/createOrder")
     public AjaxResult add(@RequestBody GptOrder gptOrder)
     {
         GptPackage gptPackage = gptPackageMapper.selectGptPackageById(gptOrder.getPackageId());

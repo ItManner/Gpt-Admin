@@ -1,5 +1,6 @@
 package com.ruoyi.system.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.jeequan.jeepay.exception.JeepayException;
 import com.ruoyi.system.domain.GptOrder;
 
@@ -17,7 +18,7 @@ public interface JeePayService {
      * @return
      * @throws JeepayException
      */
-    String scanPay(GptOrder gptOrder) throws JeepayException;
+    JSONObject scanPay(GptOrder gptOrder) throws JeepayException;
 
     String tradeNotify(HttpServletRequest req);
 }
