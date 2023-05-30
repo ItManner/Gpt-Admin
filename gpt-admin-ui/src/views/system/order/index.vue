@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="用户ID" prop="userId">
+      <el-form-item label="用户" prop="userId">
         <el-input
           v-model="queryParams.userId"
           placeholder="请输入用户ID"
@@ -9,7 +9,7 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="套餐ID" prop="packageId">
+      <el-form-item label="套餐" prop="packageId">
         <el-input
           v-model="queryParams.packageId"
           placeholder="请输入套餐ID"
@@ -32,6 +32,16 @@
           clearable
           @keyup.enter.native="handleQuery"
         />
+      </el-form-item>
+      <el-form-item label="支付状态" prop="payStatus">
+        <el-select v-model="queryParams.payStatus" placeholder="请选择支付状态" clearable>
+          <el-option
+            v-for="dict in dict.type.order_status"
+            :key="dict.value"
+            :label="dict.label"
+            :value="dict.value"
+          />
+        </el-select>
       </el-form-item>
       <el-form-item label="商品标题" prop="goodsTitle">
         <el-input
@@ -95,12 +105,16 @@
 
     <el-table v-loading="loading" :data="orderList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="订单ID" align="center" prop="id" />
-      <el-table-column label="用户ID" align="center" prop="userId" />
-      <el-table-column label="套餐ID" align="center" prop="packageId" />
-      <el-table-column label="订单金额" align="center" prop="amount" />
-      <el-table-column label="订单号" align="center" prop="orderCode" />
-      <el-table-column label="支付状态 0未支付 1已支付" align="center" prop="payStatus" />
+      <el-table-column label="订单ID" align="center" prop="id" width="120"/>
+      <el-table-column label="用户ID" align="center" prop="userId" width="120"/>
+      <el-table-column label="套餐ID" align="center" prop="packageId" width="120"/>
+      <el-table-column label="订单金额" align="center" prop="amount" width="120"/>
+      <el-table-column label="订单号" align="center" prop="orderCode" width="500"/>
+      <el-table-column label="支付状态" align="center" prop="payStatus" width="200">
+        <template slot-scope="scope">
+          <dict-tag :options="dict.type.order_status" :value="scope.row.payStatus"/>
+        </template>
+      </el-table-column>
       <el-table-column label="商品标题" align="center" prop="goodsTitle" />
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
@@ -121,7 +135,7 @@
         </template>
       </el-table-column>
     </el-table>
-    
+
     <pagination
       v-show="total>0"
       :total="total"
@@ -145,6 +159,15 @@
         <el-form-item label="订单号" prop="orderCode">
           <el-input v-model="form.orderCode" placeholder="请输入订单号" />
         </el-form-item>
+        <el-form-item label="支付状态" prop="payStatus">
+          <el-radio-group v-model="form.payStatus">
+            <el-radio
+              v-for="dict in dict.type.order_status"
+              :key="dict.value"
+              :label="dict.value"
+            >{{dict.label}}</el-radio>
+          </el-radio-group>
+        </el-form-item>
         <el-form-item label="商品标题" prop="goodsTitle">
           <el-input v-model="form.goodsTitle" placeholder="请输入商品标题" />
         </el-form-item>
@@ -162,6 +185,7 @@ import { listOrder, getOrder, delOrder, addOrder, updateOrder } from "@/api/syst
 
 export default {
   name: "Order",
+  dicts: ['order_status'],
   data() {
     return {
       // 遮罩层

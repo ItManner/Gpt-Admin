@@ -67,6 +67,7 @@ public class JeePayServiceImpl implements JeePayService {
     @Override
     @Transactional
     public JSONObject scanPay(GptOrder gptOrder) {
+
         // 构建请求数据
         PayOrderCreateRequest request = new PayOrderCreateRequest();
         PayOrderCreateReqModel model = new PayOrderCreateReqModel();
@@ -134,11 +135,16 @@ public class JeePayServiceImpl implements JeePayService {
                 return result;
             }
             //支付成功 修改订单为已支付
+            log.info("支付成功并验签通过>>>>>>");
             GptOrder gptOrder = gptOrderMapper.selectGptOrderByOrderCode(map.get("mchOrderNo").toString());
+            log.info("查询订单>>>>>>{}",gptOrder);
             gptOrder.setPayStatus("1");
             if (gptOrderMapper.updateGptOrder(gptOrder) > 0) {
+                log.info("订单状态修改成功>>>>>>{}",gptOrder.getPayStatus());
                 //返回成功
+                log.info("订单关联的套餐ID>>>>>>{}",gptOrder.getPackageId());
                 GptPackage gptPackage = gptPackageMapper.selectGptPackageById(gptOrder.getPackageId());
+                log.info("查询ID：{}的套餐>>>>>>{}",gptOrder.getPackageId(),gptPackage);
                 GptUserPackage gptUserPackage = new GptUserPackage();
                 gptUserPackage.setPackageId(gptPackage.getId());
                 //获取当天日期
@@ -146,10 +152,13 @@ public class JeePayServiceImpl implements JeePayService {
                 //获取套餐对应的天数日期
                 LocalDate afterFiveDays = today.plusDays(gptPackage.getValidTime());
                 gptUserPackage.setExpireTime(Date.from(afterFiveDays.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-                gptUserPackage.setUserId(SecurityUtils.getLoginUser().getUserId());
+                gptUserPackage.setUserId(gptOrder.getUserId());
                 gptUserPackage.setRemainingCount(gptPackage.getLimitCount());
                 gptUserPackage.setIsExpire("1");
-                if (gptUserPackageMapper.insertGptUserPackage(gptUserPackage) == 0) return result;;
+                gptUserPackage.setCreateTime(new Date());
+                log.info("创建套餐与用户关联订单>>>>>>{}",gptUserPackage);
+                if (gptUserPackageMapper.insertGptUserPackage(gptUserPackage) == 0) return result;
+                log.info("创建套餐与用户关联订单成功>>>>>>");
                 result = "success";
             }
         } catch (Exception e) {

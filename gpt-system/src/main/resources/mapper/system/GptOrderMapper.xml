@@ -35,9 +35,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectGptOrderVo"/>
         where id = #{id}
     </select>
-    <select id="selectGptOrderByOrderCode" parameterType="Long" resultMap="GptOrderResult">
-        <include refid="selectGptOrderVo"/>
-        where order_code = #{orderCode}
+    <select id="selectGptOrderByOrderCode" resultType="com.ruoyi.system.domain.GptOrder" resultMap="GptOrderResult">
+        select * from gpt_order where order_code = #{orderCode}
     </select>
 
     <insert id="insertGptOrder" parameterType="GptOrder" useGeneratedKeys="true" keyProperty="id">
